@@ -1,7 +1,8 @@
 {
   "scripts": {
-    "start": "node index.js",
-    "dev": "nodemon index.js"
+    "start": "node .",
+    "dev": "nodemon .",
+    "reload": "node deploy-commands.js"
   },
   "name": "ash-greninja-discord-bot",
   "version": "1.0.0",
