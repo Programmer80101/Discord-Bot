@@ -2,10 +2,12 @@ require("dotenv").config();
 const {REST, Routes} = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
+const config = require("./config");
 
 const clientId = process.env.CLIENT_ID;
-const guildId = process.env.GUILD_ID;
 const token = process.env.TOKEN;
+
+const guildId = config.server.id;
 
 const commands = [];
 const foldersPath = path.join(__dirname, "commands");
@@ -35,18 +37,12 @@ rest
   .put(Routes.applicationGuildCommands(clientId, guildId), {
     body: [],
   })
-  .then(() =>
-    console.log("Successfully deleted all guild commands.")
-  )
+  .then(() => console.log("Successfully deleted all guild commands."))
   .catch(console.error);
 
 rest
   .put(Routes.applicationCommands(clientId), {body: []})
-  .then(() =>
-    console.log(
-      "Successfully deleted all application commands."
-    )
-  )
+  .then(() => console.log("Successfully deleted all application commands."))
   .catch(console.error);
 
 (async () => {

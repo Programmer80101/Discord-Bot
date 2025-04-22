@@ -52,7 +52,7 @@ module.exports = {
     } catch (error) {
       console.error(error);
       message.reply(
-        `Something went wrong while executing the command. \nContact <@${process.env.OWNER_ID}> to help resolve this issue!`
+        `Something went wrong while executing the command. \nContact <@${config.owner.id}> to help resolve this issue!`
       );
     }
   },

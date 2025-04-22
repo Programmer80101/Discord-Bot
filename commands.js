@@ -1,9 +1,9 @@
-require("dotenv").config();
-const config = require("../config");
+const config = require("./config");
 const prefix = config.prefix;
 
 module.exports = {
   basic: {
+    emoji: "🗒️",
     name: "Basic",
     description: "Basic commands for the bot.",
     footer: "These commands are available for all users.",
@@ -12,8 +12,14 @@ module.exports = {
         name: "help",
         description: "Displays a list of all commands.",
         aliases: ["help", "h"],
-        usage: `${prefix}help [command]`,
+        usage: `${prefix}help [category | command]`,
         args: [
+          {
+            name: "category",
+            type: "string",
+            required: false,
+            description: "Name of a category",
+          },
           {
             name: "command",
             type: "string",
@@ -31,7 +37,6 @@ module.exports = {
             note: "Displays how to use the `ping` command.",
           },
         ],
-        footer: `Use ${prefix}help [command] for more information about a specific command.`,
       },
       info: {
         name: "info",
@@ -45,7 +50,6 @@ module.exports = {
             note: "Displays information about the bot.",
           },
         ],
-        footer: `Use ${prefix}help to see how to use the bot and its commands.`,
       },
       user: {
         name: "user",
@@ -70,7 +74,6 @@ module.exports = {
             note: "Displays information about the mentioned user.",
           },
         ],
-        footer: `Use ${prefix}help [command] to get information about a specific command.`,
       },
       ping: {
         name: "ping",
@@ -84,47 +87,15 @@ module.exports = {
             note: "Displays the latency of the bot.",
           },
         ],
-        footer: `Use ${prefix}info to get more info about the bot.`,
       },
     },
   },
   moderation: {
+    emoji: "🛡️",
     name: "Moderation",
-    description: `These are moderation commands for the bot. \nThese commands are meant to be used by moderators${prefix}`,
+    description: `These are moderation commands for the bot`,
     footer: "These commands are only available for moderators.",
     commands: {
-      echo: {
-        name: "echo",
-        description: "Sends a message in the specified channel.",
-        cooldown: 3,
-        aliases: ["echo", "send", "say"],
-        usage: `${prefix}echo (message) [channel]`,
-        args: [
-          {
-            name: "message",
-            type: "string",
-            required: true,
-            description: "The message to send",
-          },
-          {
-            name: "channel",
-            type: "channel",
-            required: false,
-            description: "The channel to send the message to",
-          },
-        ],
-        examples: [
-          {
-            command: `${prefix}echo Hello World`,
-            note: "Sends 'Hello World' in the current channel.",
-          },
-          {
-            command: `${prefix}echo Hello World #general`,
-            note: "Sends 'Hello World' in the #general channel.",
-          },
-        ],
-        footer: `Use ${prefix}echo [message] to send a message in the current channel.`,
-      },
       mute: {
         name: "mute",
         description: "Mutes a user in the server.",
@@ -164,7 +135,61 @@ module.exports = {
           },
         ],
         notes: [`Maximum mute duration is 28 days.`],
-        footer: `Use ${prefix}mute (user) (duration) to mute a user for a specified duration.`,
+      },
+      unmute: {
+        name: "unmute",
+        description: "Unmutes a user in the server.",
+        aliases: ["unmute", "unm", "untimeout", "utm"],
+        cooldown: 10,
+        usage: `${prefix}unmute (user)`,
+        args: [
+          {
+            name: "user",
+            type: "user",
+            required: true,
+            description: "The user to mute",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}mute @username 30s`,
+            note: "Unmutes the mentioned user.",
+          },
+        ],
+      },
+      warn: {
+        name: "warn",
+        description: "Warns a user in the server.",
+        kick: 3,
+        aliases: ["warn", "w"],
+        usage: `${prefix}warn (user) (duration) (reason)`,
+        args: [
+          {
+            name: "user",
+            type: "user",
+            required: true,
+            description: "The user to warn",
+          },
+          {
+            name: "duration",
+            type: "string",
+            required: true,
+            description: "The duration of the warn",
+          },
+          {
+            name: "reason",
+            type: "string",
+            required: false,
+            description: "The reason for warning the user",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}warn @username 14d Spamming`,
+            note: "Warns the mentioned user for 14d.",
+          },
+        ],
+        notes: ["Maximum warn duration is 30 days."],
       },
       kick: {
         name: "kick",
@@ -238,6 +263,59 @@ module.exports = {
           {
             command: `${prefix}unban @username`,
             note: "Unbans the user.",
+          },
+        ],
+      },
+    },
+  },
+  botUtility: {
+    emoji: "🤖",
+    name: "Bot Utility",
+    description: `These are utility commands for the bot`,
+    footer: "These commands are only available for moderators.",
+    commands: {
+      echo: {
+        name: "echo",
+        description: "Sends a message in the specified channel.",
+        cooldown: 3,
+        aliases: ["echo", "send", "say"],
+        usage: `${prefix}echo (message) [channel]`,
+        args: [
+          {
+            name: "message",
+            type: "string",
+            required: true,
+            description: "The message to send",
+          },
+          {
+            name: "channel",
+            type: "channel",
+            required: false,
+            description: "The channel to send the message to",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}echo Hello World`,
+            note: "Sends 'Hello World' in the current channel.",
+          },
+          {
+            command: `${prefix}echo Hello World #general`,
+            note: "Sends 'Hello World' in the #general channel.",
+          },
+        ],
+      },
+      embed: {
+        name: "embed",
+        description: "Sends an embed in the specified channel.",
+        cooldown: 3,
+        aliases: ["embed"],
+        usage: `${prefix}embed`,
+        args: [],
+        examples: [
+          {
+            command: `${prefix}embed`,
+            note: "Prompts the user to fill details before sending an embed in the specified channel.",
           },
         ],
       },
