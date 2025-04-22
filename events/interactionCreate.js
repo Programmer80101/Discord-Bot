@@ -1,4 +1,5 @@
 const {Events, MessageFlags, Collection} = require("discord.js");
+const config = require("../config");
 
 module.exports = {
   name: Events.InteractionCreate,
@@ -16,15 +17,14 @@ module.exports = {
 
     const {cooldowns} = interaction.client;
 
-    if (!cooldowns.has(command.data.name)) {
-      cooldowns.set(command.data.name, new Collection());
+    if (!cooldowns.has(command.name)) {
+      cooldowns.set(command.name, new Collection());
     }
 
     const now = Date.now();
-    const timestamps = cooldowns.get(command.data.name);
-    const defaultCooldownDuration = 3;
+    const timestamps = cooldowns.get(command.name);
     const cooldownAmount =
-      (command.cooldown ?? defaultCooldownDuration) * 1_000;
+      (command.cooldown ?? config.cooldown.default) * 1_000;
 
     if (timestamps.has(interaction.user.id)) {
       const expirationTime =
@@ -33,7 +33,7 @@ module.exports = {
       if (now < expirationTime) {
         const expiredTimestamp = Math.round(expirationTime / 1_000);
         return interaction.reply({
-          content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
+          content: `Please wait, you are on a cooldown for \`${command.data.name}\`. \nYou can use it again <t:${expiredTimestamp}:R>.`,
           flags: MessageFlags.Ephemeral,
         });
       }
@@ -47,7 +47,7 @@ module.exports = {
     } catch (error) {
       console.error(error);
       await interaction.reply({
-        content: `Something went wrong while executing the command. Contact <@${process.env.OWNER_ID}> right away!`,
+        content: `Something went wrong while executing the command. \nContact <@${config.owner.id}>to resolve this issue!`,
       });
     }
   },

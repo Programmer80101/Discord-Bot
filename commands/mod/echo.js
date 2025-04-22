@@ -37,13 +37,13 @@ module.exports = {
     try {
       await channel.send(text);
       await interaction.reply({
-        content: `✅ Message echoed in ${channel}. \n **Message:** ${text}`,
+        content: `✅ Message echoed in ${channel}. \n**Message:** ${text}`,
         flags: MessageFlags.Ephemeral,
       });
     } catch (error) {
       console.error(error);
       await interaction.reply({
-        content: `❌ Failed to send message in ${channel}. \n **Error:** ${error.message}`,
+        content: `❌ Failed to send message in ${channel}. \n**Error:** ${error.message}`,
         flags: MessageFlags.Ephemeral,
       });
     }
@@ -51,7 +51,7 @@ module.exports = {
 
   async prefix(message, args) {
     const optionalChannel = message.mentions.channels.first();
-    const targetChannel = message.channel;
+    let targetChannel = message.channel;
     if (optionalChannel) {
       targetChannel = optionalChannel;
       args.pop();
@@ -64,13 +64,15 @@ module.exports = {
 
     try {
       await targetChannel.send(text);
-      await message.reply(
-        `✅ Message echoed in ${targetChannel}. \n **Message:** ${text}`
-      );
+      if (targetChannel != message.channel) {
+        await message.reply(
+          `✅ Message echoed in ${targetChannel}. \n**Message:** ${text}`
+        );
+      }
     } catch (error) {
       console.error(error);
       await message.reply(
-        `❌ Failed to send message in ${targetChannel}. \n **Error:** ${error.message}`
+        `❌ Failed to send message in ${targetChannel}. \n**Error:** ${error.message}`
       );
     }
   },
