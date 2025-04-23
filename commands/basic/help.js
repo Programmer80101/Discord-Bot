@@ -17,7 +17,7 @@ const helpEmbed = {
   color: config.embed.color.default,
   title: "📘 Command Guide",
   description: "List of all available commands with categories!",
-  footer: {text: getRandomTip("basic", "help")},
+  footer: {text: getRandomTip(commandsData.basic.name, command.name)},
   fields,
 };
 

@@ -76,7 +76,7 @@ const createCommandGuideEmbed = (name) => {
           color: config.embed.color.default,
           fields,
           footer: {
-            text: getRandomTip("basic"),
+            text: getRandomTip(category.name, cmd.name),
           },
         };
       }
