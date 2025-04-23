@@ -33,14 +33,21 @@ const createCommandGuideEmbed = (name) => {
       ) {
         const fields = [
           {
-            name: "📂 Category",
+            name: "📁 Category",
             value: category.name,
           },
           {
-            name: "📝 Description",
+            name: "ℹ️ Description",
             value: cmd.description || "No description provided.",
           },
         ];
+
+        if (cmd.aliases && cmd.aliases.length > 0) {
+          fields.push({
+            name: "🔀 Aliases",
+            value: cmd.aliases.map((a) => `\`${a}\``).join(", "),
+          });
+        }
 
         if (cmd.usage) {
           fields.push({
@@ -49,10 +56,10 @@ const createCommandGuideEmbed = (name) => {
           });
         }
 
-        if (cmd.aliases && cmd.aliases.length > 0) {
+        if (cmd.notes) {
           fields.push({
-            name: "🔀 Aliases",
-            value: cmd.aliases.map((a) => `\`${a}\``).join(", "),
+            name: "📄 Note",
+            value: cmd.notes.join("\n"),
           });
         }
 
@@ -63,15 +70,8 @@ const createCommandGuideEmbed = (name) => {
           });
         }
 
-        if (cmd.notes) {
-          fields.push({
-            name: "ℹ️ Notes",
-            value: cmd.notes.join("\n"),
-          });
-        }
-
         return {
-          title: `Command Guide: \`${cmd.name}\``,
+          title: `Command Guide: \`${config.prefix}${cmd.name}\``,
           description: cmd.description || null,
           color: config.embed.color.default,
           fields,

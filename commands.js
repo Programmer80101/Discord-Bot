@@ -321,4 +321,37 @@ module.exports = {
       },
     },
   },
+  fun: {
+    emoji: "😁",
+    name: "Fun",
+    description: `These are some fun commands you can use to mess around!`,
+    commands: {
+      kill: {
+        name: "kill",
+        description: "Sends a funny kill message 😂",
+        aliases: ["kill", "k"],
+        usage: `${prefix}kill`,
+        args: [
+          {
+            name: "user",
+            type: "string",
+            required: false,
+            description: "The user to kill",
+          },
+          {
+            name: "user",
+            type: "string",
+            required: false,
+            description: "The killer!",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}kill kowshik`,
+            note: "Sends a funny kill message to Kowshik.",
+          },
+        ],
+      },
+    },
+  },
 };

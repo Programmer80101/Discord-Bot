@@ -48,6 +48,12 @@ module.exports = {
       },
     },
     moderation: {
+      warn: {
+        default: `Use ${prefix}warn (user) (reason) to warn a user.`,
+      },
+      unwarn: {
+        default: `Use ${prefix}unwarn (user) (reason) to unwarn a user.`,
+      },
       mute: {
         default: `Use ${prefix}mute (user) (time) (reason) to mute a user for a certain amount of time.`,
       },
