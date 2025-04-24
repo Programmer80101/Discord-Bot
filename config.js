@@ -1,3 +1,5 @@
+const {mem} = require("node-os-utils");
+
 require("dotenv").config();
 
 const prefix = "!";
@@ -18,9 +20,10 @@ module.exports = {
     color: {
       default: 0x0099ff,
       purple: 0x8c00ff,
-      green: 0x17ca26,
+      yellow: 0xd4d440,
+      green: 0x27c027,
       gold: 0xffd900,
-      red: 0xe43336,
+      red: 0xd43636,
     },
   },
   server: {

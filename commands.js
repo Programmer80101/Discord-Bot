@@ -38,16 +38,16 @@ module.exports = {
           },
         ],
       },
-      info: {
-        name: "info",
-        description: "Provides information about the bot.",
-        aliases: ["info", "i"],
-        usage: `${prefix}info`,
+      botInfo: {
+        name: "botinfo",
+        description: "Provides all necessary about the bot.",
+        aliases: ["botinfo", "bot", "bi"],
+        usage: `${prefix}botinfo`,
         args: [],
         examples: [
           {
-            command: `${prefix}info`,
-            note: "Displays information about the bot.",
+            command: `${prefix}botinfo`,
+            note: "Displays necessary information about the bot.",
           },
         ],
       },
