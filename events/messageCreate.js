@@ -14,7 +14,7 @@ module.exports = {
       return;
 
     if (
-      process.env.NODE_ENV != "dev" &&
+      process.env.NODE_ENV == "prod" &&
       config.allowed.channels.includes(message.channel.id)
     )
       return;
