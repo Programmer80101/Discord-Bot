@@ -7,7 +7,7 @@ const {createCommandGuideEmbed, getRandomTip} = require("../../utils");
 const commandsData = require("../../commands");
 const config = require("../../config");
 
-const command = commandsData.moderation.commands.ban;
+const command = commandsData.moderation.commands.purge;
 
 const createBanEmbed = (success, title, description) => {
   return {
@@ -139,19 +139,13 @@ module.exports = {
   data: new SlashCommandBuilder()
     .setName(command.name)
     .setDescription(command.description)
-    .addUserOption((option) =>
+    .addIntegerOption((option) =>
       option
         .setName(command.args[0].name)
         .setDescription(command.args[0].description)
         .setRequired(command.args[0].required)
     )
-    .addStringOption((option) =>
-      option
-        .setName(command.args[1].name)
-        .setDescription(command.args[1].description)
-        .setRequired(command.args[1].required)
-    )
-    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+    .setDefaultMemberPermissions(PermissionFlagsBits.ManageMessages)
     .setContexts(InteractionContextType.Guild),
 
   async execute(interaction) {
@@ -164,12 +158,7 @@ module.exports = {
   },
 
   async prefix(message, args) {
-    const targetUser = message.mentions.users.first();
-    const targetMember = targetUser
-      ? await message.guild.members.fetch(targetUser.id).catch(() => null)
-      : null;
-    const reason = args.slice(1).join(" ") || "No reason provided";
-
-    await banUser(message, message.member, targetMember, reason);
+    const amount = parseInt(args[1]);
+    await purge(message, amount);
   },
 };

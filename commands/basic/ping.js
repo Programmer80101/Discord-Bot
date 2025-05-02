@@ -1,12 +1,7 @@
 const {SlashCommandBuilder} = require("discord.js");
+const commandsData = require("../../commands");
 
-const command = {
-  name: "ping",
-  description: "Checks the latency of the bot.",
-  aliases: ["ping", "p"],
-  cooldown: 10,
-};
-
+const command = commandsData.basic.commands.ping;
 const getLatency = (client) => `🏓 Pong! Latency is ${client.ws.ping}ms.`;
 
 module.exports = {

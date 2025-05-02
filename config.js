@@ -18,8 +18,9 @@ module.exports = {
   },
   embed: {
     color: {
+      neutral: 0x636363,
       default: 0x0099ff,
-      purple: 0x8c00ff,
+      purple: 0x992bff,
       yellow: 0xd4d440,
       green: 0x27c027,
       gold: 0xffd900,
@@ -31,6 +32,46 @@ module.exports = {
   },
   channel: {
     log: "",
+  },
+  emoji: {
+    general: {
+      duration: "⏱️",
+      partyPopper: "🎉",
+      confetti: "🎊",
+      ribbon: "🎀",
+      present: "🎁",
+      link: "🔗",
+      pin: "📌",
+      roundPin: "📍",
+      hourglass: "⌛",
+      hourglass2: "⏳",
+      cabinet: "🗄️",
+      alert: "🚨",
+      warning: "⚠️",
+      fire: "🔥",
+      thunder: "⚡",
+      drop: "💧",
+      snowflake: "❄️",
+      profit: "📈",
+      loss: "📉",
+      label: "🏷️",
+      bookmark: "🔖",
+      coin: "🪙",
+      in: "📥",
+      out: "📤",
+      success: "✅",
+      error: "❌",
+    },
+  },
+  message: {
+    error: {
+      somethingWentWrong: "⚠️ Something went wrong",
+      selfSabotage: "🔰 Self Sabotage",
+      roleHierarchy: "📊 Improper Role Heirarchy",
+      insufficientPermissions: "⛔ Insufficient Permissions",
+      invalidArguments: "❌ Invalid Arguments",
+      invalidDuration: "⏱️ Invalid Duration",
+    },
   },
   tips: {
     basic: {
@@ -51,6 +92,9 @@ module.exports = {
       },
     },
     moderation: {
+      purge: {
+        default: `Use ${prefix}purge (amount) to delete a certain amount of messages.`,
+      },
       warn: {
         default: `Use ${prefix}warn (user) (reason) to warn a user.`,
       },

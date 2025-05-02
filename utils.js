@@ -1,3 +1,4 @@
+const {parse} = require("dotenv");
 const commandsData = require("./commands.js");
 const config = require("./config.js");
 
@@ -21,6 +22,43 @@ const getRandomTip = (category, exception = "") => {
   return getRandomValue(config.tips[id][randomKey]);
 };
 
+const parseTime = (string) => {
+  const units = {
+    s: 1000,
+    m: 60 * 1000,
+    h: 60 * 60 * 1000,
+    d: 24 * 60 * 60 * 1000,
+    w: 7 * 24 * 60 * 60 * 1000,
+    y: 365 * 24 * 60 * 60 * 1000,
+  };
+
+  const regex = /(\d+)(\w+)/i;
+  const match = string.match(regex);
+  if (!match)
+    return {
+      success: false,
+      duration: null,
+      message: "Duration didn't match!",
+    };
+
+  const value = parseInt(match[1], 10);
+  const unit = match[2].toLowerCase();
+
+  const multiplier = units[unit[0]];
+  if (!multiplier)
+    return {
+      success: false,
+      duration: null,
+      message: "Duration didn't match!",
+    };
+
+  return {
+    success: true,
+    duration: value * multiplier,
+    message: "",
+  };
+};
+
 const createCommandGuideEmbed = (name) => {
   const query = name.toLowerCase();
 
@@ -35,6 +73,10 @@ const createCommandGuideEmbed = (name) => {
           {
             name: "📁 Category",
             value: category.name,
+          },
+          {
+            name: "🪪 Name",
+            value: `${cmd.emoji} ${cmd.name}`,
           },
           {
             name: "ℹ️ Description",
@@ -112,4 +154,9 @@ const createCommandGuideEmbed = (name) => {
   };
 };
 
-module.exports = {createCommandGuideEmbed, getRandomTip, getRandomValue};
+module.exports = {
+  createCommandGuideEmbed,
+  parseTime,
+  getRandomTip,
+  getRandomValue,
+};

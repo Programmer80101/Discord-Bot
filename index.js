@@ -3,6 +3,18 @@ const {Client, GatewayIntentBits, Collection} = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
 
+const express = require("express");
+const app = express();
+
+app.get("/ping", (req, res) => {
+  res.send("Pong!");
+});
+
+const PORT = process.env.PORT || 10_000;
+app.listen(PORT, () => {
+  console.log(`✅ Server started at port: ${PORT}`);
+});
+
 const client = new Client({
   intents: [
     GatewayIntentBits.Guilds,

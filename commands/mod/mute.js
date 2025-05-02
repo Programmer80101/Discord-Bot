@@ -3,32 +3,38 @@ const {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } = require("discord.js");
-const {createCommandGuideEmbed, getRandomTip} = require("../../utils");
+const {
+  createCommandGuideEmbed,
+  getRandomTip,
+  parseTime,
+} = require("../../utils");
 const commandsData = require("../../commands");
 const config = require("../../config");
 
-const command = commandsData.moderation.commands.ban;
+const command = commandsData.moderation.commands.mute;
 
-const createBanEmbed = (success, title, description) => {
+const createMuteEmbed = (success, title, description) => {
   return {
     title: title,
     description: description,
     color: success ? config.embed.color.green : config.embed.color.red,
-    footer: {text: getRandomTip(commandsData.moderation.name, command.name)},
+    footer: {
+      text: getRandomTip(commandsData.moderation.name, command.name),
+    },
   };
 };
 
-const banUser = async (source, invoker, targetMember, reason) => {
+const muteUser = async (source, invoker, targetMember, duration, reason) => {
   if (!targetMember) {
     const embed = createCommandGuideEmbed(command.name);
     return await source.reply({embeds: [embed]});
   }
 
   if (invoker.id == targetMember.id) {
-    const embed = createBanEmbed(
+    const embed = createMuteEmbed(
       false,
       config.message.error.selfSabotage,
-      `${config.emoji.error.default} If you want to ban yourself ask the Owner about it! 😉`
+      `${config.emoji.general.error} If you want to mute yourself ask the Owner about it! 😉`
     );
 
     return await source.reply({embeds: [embed]});
@@ -41,11 +47,11 @@ const banUser = async (source, invoker, targetMember, reason) => {
     await source.reply("Get lost!");
   }
 
-  if (!invoker.permissions.has(PermissionFlagsBits.BanMembers)) {
-    const embed = createBanEmbed(
+  if (!invoker.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+    const embed = createMuteEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} You do not have permission to ban members.`
+      `${config.emoji.general.error} You do not have permission to mute members.`
     );
 
     return await source.reply({embeds: [embed]});
@@ -53,11 +59,11 @@ const banUser = async (source, invoker, targetMember, reason) => {
 
   const bot = await source.guild.members.fetchMe();
 
-  if (!bot.permissions.has(PermissionFlagsBits.BanMembers)) {
-    const embed = createBanEmbed(
+  if (!bot.permissions.has(PermissionFlagsBits.ModerateMembers)) {
+    const embed = createMuteEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} I do not have permission to ban members.`
+      `${config.emoji.general.error} I do not have permission to mute members.`
     );
 
     return await source.reply({embeds: [embed]});
@@ -68,58 +74,70 @@ const banUser = async (source, invoker, targetMember, reason) => {
   const targetHighestRole = targetMember.roles.highest.position;
 
   if (memberHighestRole <= targetHighestRole) {
-    const embed = createBanEmbed(
+    const embed = createMuteEmbed(
       false,
       config.message.error.roleHierarchy,
-      `${config.emoji.error.default} You cannot ban a member with a equal or higher role.`
+      `${config.emoji.general.error} You cannot mute a member with a equal or higher role.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
   if (botHighestRole <= targetHighestRole) {
-    const embed = createBanEmbed(
+    const embed = createMuteEmbed(
       false,
       config.message.error.roleHierarchy,
-      `${config.emoji.error.default} I cannot ban a member with a equal or higher role.`
+      `${config.emoji.general.error} I cannot mute a member with a equal or higher role.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
-  if (!targetMember.bannable) {
-    const embed = createBanEmbed(
+  const {success, durationInMs, message} = parseTime(duration);
+
+  if (durationInMs <= 0) {
+    const embed = createMuteEmbed(
       false,
-      config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} I cannot ban that member.`
+      config.message.error.invalidDuration,
+      `${config.emoji.general.error} Invalid duration format. \nUse \`1s\`, \`1m\`, \`1h\`, \`1d\`, \`1w\`, or \`1y\`.`
+    );
+
+    return await source.reply({embeds: [embed]});
+  }
+
+  if (durationInMs > 28 * 24 * 60 * 60 * 1000) {
+    const embed = createMuteEmbed(
+      false,
+      config.message.error.invalidDuration,
+      `${config.emoji.general.error} The maximum mute duration is 28 days.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
   try {
-    await source.client.users.send(targetMember.id, {
+    await targetMember.timeout(durationInMs);
+    await targetMember.send({
       embeds: [
         {
-          title: `${command.emoji} You were banned!`,
-          description: `You were banned from **${source.guild.name}** \n**Reason**: ${reason}`,
+          title: `${command.emoji}  You were muted!`,
+          description: `You were muted in **${source.guild.name}** \n**Duration**: ${duration} \n**Reason**: ${reason}`,
           color: config.embed.color.red,
         },
       ],
     });
-    await source.guild.members.ban(targetMember.id, {reason});
     await source.reply({
       embeds: [
         {
-          title: `${command.emoji} Ban Successful`,
-          description: `${config.emoji.general.success} **${targetMember.user.tag}** was banned! \n**Reason**: ${reason}`,
+          title: `${command.emoji} Mute Successful`,
+          description: `${config.emoji.general.success} **${targetMember.user.tag}** was muted!  \n**Duration**: ${duration} \n**Reason**: ${reason}`,
           color: config.embed.color.green,
         },
       ],
     });
   } catch (error) {
     console.error(error);
-    await interaction.reply({
+    await source.reply({
       embeds: [
         {
           title: config.message.error.somethingWentWrong,
@@ -151,25 +169,40 @@ module.exports = {
         .setDescription(command.args[1].description)
         .setRequired(command.args[1].required)
     )
-    .setDefaultMemberPermissions(PermissionFlagsBits.BanMembers)
+    .addStringOption((option) =>
+      option
+        .setName(command.args[2].name)
+        .setDescription(command.args[2].description)
+        .setRequired(command.args[2].required)
+    )
+    .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .setContexts(InteractionContextType.Guild),
 
   async execute(interaction) {
     const targetMember = interaction.options.getMember(command.args[0].name);
+    const duration = interaction.options.getString(command.args[1].name);
     const reason =
-      interaction.options.getString(command.args[1].name) ??
+      interaction.options.getString(command.args[2].name) ??
       "No reason provided";
 
-    await banUser(interaction, interaction.member, targetMember, reason);
+    await muteUser(
+      interaction,
+      interaction.member,
+      targetMember,
+      duration,
+      reason
+    );
   },
 
   async prefix(message, args) {
     const targetUser = message.mentions.users.first();
+    const duration = args[1];
     const targetMember = targetUser
       ? await message.guild.members.fetch(targetUser.id).catch(() => null)
       : null;
-    const reason = args.slice(1).join(" ") || "No reason provided";
 
-    await banUser(message, message.member, targetMember, reason);
+    const reason = args.slice(2).join(" ") || "No reason provided";
+
+    await muteUser(message, message.member, targetMember, duration, reason);
   },
 };
