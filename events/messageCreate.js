@@ -7,6 +7,17 @@ module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
     if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (
+      process.env.NODE_ENV == "dev" &&
+      !config.allowed.channels.includes(message.channel.id)
+    )
+      return;
+
+    if (
+      process.env.NODE_ENV != "dev" &&
+      config.allowed.channels.includes(message.channel.id)
+    )
+      return;
 
     const args = message.content.slice(prefix.length).trim().split(/ +/);
     const commandName = args.shift().toLowerCase();

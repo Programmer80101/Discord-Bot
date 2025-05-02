@@ -5,6 +5,15 @@ module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
     if (!interaction.isChatInputCommand()) return;
+    if (
+      process.env.NODE_ENV == "dev" &&
+      !config.allowed.channels.includes(interaction.channelId)
+    ) {
+      return interaction.reply({
+        content: "❌ You cannot use this command.",
+        flags: MessageFlags.Ephemeral,
+      });
+    }
 
     const command = interaction.client.commands.get(interaction.commandName);
 

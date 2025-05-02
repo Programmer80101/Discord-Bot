@@ -1,11 +1,9 @@
-const {mem} = require("node-os-utils");
-
 require("dotenv").config();
 
 const prefix = "!";
 
 module.exports = {
-  name: "Ash Greninja",
+  name: process.env.NODE_ENV !== "dev" ? "Ash Greninja" : "Greninja",
   prefix: prefix,
   iconURL: "https://images.app.goo.gl/6uZ9YvYERfWabBS27",
   cooldown: {
@@ -32,6 +30,9 @@ module.exports = {
   },
   channel: {
     log: "",
+  },
+  allowed: {
+    channels: ["1363436838290985161"],
   },
   emoji: {
     general: {
