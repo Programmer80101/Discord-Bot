@@ -119,7 +119,7 @@ const banUser = async (source, invoker, targetMember, reason) => {
     });
   } catch (error) {
     console.error(error);
-    await interaction.reply({
+    await source.reply({
       embeds: [
         {
           title: config.message.error.somethingWentWrong,

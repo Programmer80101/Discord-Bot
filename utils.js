@@ -38,7 +38,6 @@ const parseTime = (string) => {
     return {
       success: false,
       duration: null,
-      message: "Duration didn't match!",
     };
 
   const value = parseInt(match[1], 10);
@@ -49,13 +48,11 @@ const parseTime = (string) => {
     return {
       success: false,
       duration: null,
-      message: "Duration didn't match!",
     };
 
   return {
     success: true,
     duration: value * multiplier,
-    message: "",
   };
 };
 

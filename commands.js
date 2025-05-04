@@ -105,7 +105,7 @@ module.exports = {
         emoji: "🗑️",
         description:
           "Deletes specified number of messages in the channel where command is used.",
-        aliases: ["purge", "p"],
+        aliases: ["purge", "delete"],
         cooldown: 3,
         usage: `${prefix}purge (amount)`,
         args: [
@@ -122,7 +122,7 @@ module.exports = {
             note: "Deletes 20 messages in the channel where command is used!",
           },
         ],
-        notes: [`Maximum mute duration is 28 days.`],
+        notes: [`Amount must be a valid integer between 1 and 100`],
       },
       mute: {
         name: "mute",

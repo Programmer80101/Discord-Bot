@@ -60,7 +60,7 @@ const updateGameState = (gameId, key, value, index = null) => {
 const sendTimeoutEmbed = async (channel) => {
   const timeoutEmbed = {
     color: config.embed.color.red,
-    title: "🏏 Hand Cricket: ⏰ Match Timed Out",
+    title: "🏏 Hand Cricket: ⏰ Time Out",
     description: "Match ended as both the players didn't respond in time!",
   };
 
@@ -194,7 +194,7 @@ async function playOneBall(channel, inningMessage, gameState) {
 
 const playOneInning = async (channel, inningMessage, gameState) => {
   while (!gameState.finished) {
-    const outcome = playOneBall(channel, gameState);
+    const outcome = await playOneBall(channel, gameState);
 
     if (outcome.timeout) {
       await sendTimeoutEmbed(channel);
@@ -234,7 +234,8 @@ const playOneInning = async (channel, inningMessage, gameState) => {
 };
 
 const startMatch = async (source, player1, player2) => {
-  if (games.has(source.channelId)) {
+  const gameId = source.channelId;
+  if (games.has(gameId)) {
     return await source.reply({
       content: "❌ A game is already in progress in this channel.",
     });
@@ -243,15 +244,8 @@ const startMatch = async (source, player1, player2) => {
   const channel = await source.client.channels.fetch(source.channelId);
   const tossWinner = Math.random() < 0.5 ? player1 : player2;
 
-  const gameState = createGameState(
-    source.channelId,
-    player1,
-    player2,
-    tossWinner,
-    null
-  );
-
-  games.set(source.channelId, gameState);
+  const gameState = createGameState(gameId, player1, player2, tossWinner, null);
+  games.set(gameId, gameState);
 
   const tossEmbed = {
     color: config.embed.color.default,
@@ -328,7 +322,7 @@ const startMatch = async (source, player1, player2) => {
         const battingFirst = winnerChoice === "batFirst" ? player1 : player2;
         const battingSecond = winnerChoice === "batFirst" ? player2 : player1;
 
-        updateGameState(source.channelId, "battingFirst", battingFirst);
+        updateGameState(gameId, "battingFirst", battingFirst);
 
         tossEmbed.fields[1].value = `**${tossWinner}** decided to ${choiceEmoji} ${choiceMessage} first!`;
 
@@ -346,7 +340,7 @@ const startMatch = async (source, player1, player2) => {
         });
 
         await playOneInning(channel, firstInningMessage, gameState);
-        updateGameState(gameState.channelId, "inning", 2);
+        updateGameState(gameId, "inning", 2);
 
         const secondInningEmbed = createInningEmbed(gameState);
         const secondInningMessage = await channel.send({
@@ -400,9 +394,26 @@ const startMatch = async (source, player1, player2) => {
           embeds: [winnerEmbed],
         });
       });
+
+      choiceCollector.on("end", async (collected, reason) => {
+        if (reason === "time") {
+          tossEmbed.color = config.embed.color.red;
+          tossEmbed.fields[1].value = "⏰ Time's up! Match timed out!";
+          tossEmbed.description += `\n⏰ **${tossWinner}** didn't make a choice in time!`;
+          await tossMessage.edit({
+            embeds: [tossEmbed],
+            components: [],
+          });
+        } else {
+          console.error("Collector ended due to unknown reason: ", reason);
+        }
+
+        games.delete(gameId);
+        return await sendTimeoutEmbed(channel);
+      });
     } catch (error) {
       console.error("Error waiting for toss interaction:", error);
-      games.delete(source.channelId);
+      games.delete(gameId);
       return await sendTimeoutEmbed(channel);
     }
   }, 1500);

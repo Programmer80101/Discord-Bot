@@ -42,7 +42,7 @@ module.exports = {
       });
     } catch (error) {
       console.error(error);
-      await interaction.reply({
+      await source.reply({
         content: `❌ Failed to send message in ${channel}. \n**Error:** ${error.message}`,
         flags: MessageFlags.Ephemeral,
       });

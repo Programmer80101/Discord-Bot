@@ -3,17 +3,13 @@ const {
   PermissionFlagsBits,
   SlashCommandBuilder,
 } = require("discord.js");
-const {
-  createCommandGuideEmbed,
-  getRandomTip,
-  parseTime,
-} = require("../../utils");
+const {createCommandGuideEmbed, getRandomTip} = require("../../utils");
 const commandsData = require("../../commands");
 const config = require("../../config");
 
-const command = commandsData.moderation.commands.mute;
+const command = commandsData.moderation.commands.unmute;
 
-const createMuteEmbed = (success, title, description) => {
+const createUnmuteEmbed = (success, title, description) => {
   return {
     title: title,
     description: description,
@@ -24,26 +20,26 @@ const createMuteEmbed = (success, title, description) => {
   };
 };
 
-const muteUser = async (source, invoker, targetMember, duration, reason) => {
+const muteUser = async (source, invoker, targetMember, reason) => {
   if (!targetMember) {
     const embed = createCommandGuideEmbed(command.name);
     return await source.reply({embeds: [embed]});
   }
 
-  if (targetMember.isCommunicationDisabled()) {
-    const embed = createMuteEmbed(
+  if (!targetMember.isCommunicationDisabled()) {
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.invalidArguments,
-      `${config.emoji.general.error} Target member is already muted!`
+      `${config.emoji.general.error} Target member is not muted!`
     );
     return await source.reply({embeds: [embed]});
   }
 
   if (invoker.id == targetMember.id) {
-    const embed = createMuteEmbed(
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.selfSabotage,
-      `${config.emoji.general.error} If you want to mute yourself ask the Owner about it! 😉`
+      `${config.emoji.general.error} If you want to unmute yourself ask the Owner about it! 😉`
     );
 
     return await source.reply({embeds: [embed]});
@@ -57,10 +53,10 @@ const muteUser = async (source, invoker, targetMember, duration, reason) => {
   }
 
   if (!invoker.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-    const embed = createMuteEmbed(
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.general.error} You do not have permission to mute members.`
+      `${config.emoji.general.error} You do not have permission to unmute members.`
     );
 
     return await source.reply({embeds: [embed]});
@@ -69,10 +65,10 @@ const muteUser = async (source, invoker, targetMember, duration, reason) => {
   const bot = await source.guild.members.fetchMe();
 
   if (!bot.permissions.has(PermissionFlagsBits.ModerateMembers)) {
-    const embed = createMuteEmbed(
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.general.error} I do not have permission to mute members.`
+      `${config.emoji.general.error} I do not have permission to unmute members.`
     );
 
     return await source.reply({embeds: [embed]});
@@ -83,64 +79,32 @@ const muteUser = async (source, invoker, targetMember, duration, reason) => {
   const targetHighestRole = targetMember.roles.highest.position;
 
   if (memberHighestRole <= targetHighestRole) {
-    const embed = createMuteEmbed(
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.roleHierarchy,
-      `${config.emoji.general.error} You cannot mute a member with a equal or higher role.`
+      `${config.emoji.general.error} You cannot unmute a member with a equal or higher role.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
   if (botHighestRole <= targetHighestRole) {
-    const embed = createMuteEmbed(
+    const embed = createUnmuteEmbed(
       false,
       config.message.error.roleHierarchy,
-      `${config.emoji.general.error} I cannot mute a member with a equal or higher role.`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  const {success, durationInMs} = parseTime(duration);
-
-  if (!success) {
-    const embed = createMuteEmbed(
-      false,
-      config.message.error.invalidDuration,
-      `${config.emoji.general.error} Invalid duration format. \nUse \`1s\`, \`1m\`, \`1h\`, \`1d\`, \`1w\`, or \`1y\`.`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  if (durationInMs < 1000) {
-    const embed = createMuteEmbed(
-      false,
-      config.message.error.invalidDuration,
-      `${config.emoji.general.error} The minimum mute duration is 1 minute.`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  if (durationInMs > 28 * 24 * 60 * 60 * 1000) {
-    const embed = createMuteEmbed(
-      false,
-      config.message.error.invalidDuration,
-      `${config.emoji.general.error} The maximum mute duration is 28 days.`
+      `${config.emoji.general.error} I cannot unmute a unmember with a equal or higher role.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
   try {
-    await targetMember.timeout(durationInMs, reason);
+    await targetMember.timeout(null, reason);
     await targetMember.send({
       embeds: [
         {
-          title: `${command.emoji}  You were muted!`,
-          description: `You were muted in **${source.guild.name}** \n**Duration**: ${duration} \n**Reason**: ${reason}`,
+          title: `${command.emoji} You were unmuted!`,
+          description: `You were unmuted in **${source.guild.name}** \n**Reason**: ${reason}`,
           color: config.embed.color.red,
         },
       ],
@@ -148,8 +112,8 @@ const muteUser = async (source, invoker, targetMember, duration, reason) => {
     await source.reply({
       embeds: [
         {
-          title: `${command.emoji} Mute Successful`,
-          description: `${config.emoji.general.success} **${targetMember.user.tag}** was muted!  \n**Duration**: ${duration} \n**Reason**: ${reason}`,
+          title: `${command.emoji} Unmute Successful`,
+          description: `${config.emoji.general.success} **${targetMember.user.tag}** was Unmuted! \n**Reason**: ${reason}`,
           color: config.embed.color.green,
         },
       ],
@@ -188,40 +152,26 @@ module.exports = {
         .setDescription(command.args[1].description)
         .setRequired(command.args[1].required)
     )
-    .addStringOption((option) =>
-      option
-        .setName(command.args[2].name)
-        .setDescription(command.args[2].description)
-        .setRequired(command.args[2].required)
-    )
     .setDefaultMemberPermissions(PermissionFlagsBits.ModerateMembers)
     .setContexts(InteractionContextType.Guild),
 
   async execute(interaction) {
     const targetMember = interaction.options.getMember(command.args[0].name);
-    const duration = interaction.options.getString(command.args[1].name);
     const reason =
-      interaction.options.getString(command.args[2].name) ??
+      interaction.options.getString(command.args[1].name) ??
       "No reason provided";
 
-    await muteUser(
-      interaction,
-      interaction.member,
-      targetMember,
-      duration,
-      reason
-    );
+    await muteUser(interaction, interaction.member, targetMember, reason);
   },
 
   async prefix(message, args) {
     const targetUser = message.mentions.users.first();
-    const duration = args[1];
     const targetMember = targetUser
       ? await message.guild.members.fetch(targetUser.id).catch(() => null)
       : null;
 
-    const reason = args.slice(2).join(" ") || "No reason provided";
+    const reason = args.slice(1).join(" ") || "No reason provided";
 
-    await muteUser(message, message.member, targetMember, duration, reason);
+    await muteUser(message, message.member, targetMember, reason);
   },
 };

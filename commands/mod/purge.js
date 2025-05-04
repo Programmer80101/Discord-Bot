@@ -9,7 +9,7 @@ const config = require("../../config");
 
 const command = commandsData.moderation.commands.purge;
 
-const createBanEmbed = (success, title, description) => {
+const createPurgeEmbed = (success, title, description) => {
   return {
     title: title,
     description: description,
@@ -18,34 +18,17 @@ const createBanEmbed = (success, title, description) => {
   };
 };
 
-const banUser = async (source, invoker, targetMember, reason) => {
-  if (!targetMember) {
+const purge = async (source, invoker, amount) => {
+  if (!amount) {
     const embed = createCommandGuideEmbed(command.name);
     return await source.reply({embeds: [embed]});
   }
 
-  if (invoker.id == targetMember.id) {
-    const embed = createBanEmbed(
-      false,
-      config.message.error.selfSabotage,
-      `${config.emoji.error.default} If you want to ban yourself ask the Owner about it! 😉`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  if (
-    config.owner.id == targetMember.id ||
-    targetMember.id === source.guild.ownerId
-  ) {
-    await source.reply("Get lost!");
-  }
-
-  if (!invoker.permissions.has(PermissionFlagsBits.BanMembers)) {
-    const embed = createBanEmbed(
+  if (!invoker.permissions.has(PermissionFlagsBits.ManageMessages)) {
+    const embed = createPurgeEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} You do not have permission to ban members.`
+      `${config.emoji.error.default} You do not have permission to delete messages.`
     );
 
     return await source.reply({embeds: [embed]});
@@ -53,73 +36,46 @@ const banUser = async (source, invoker, targetMember, reason) => {
 
   const bot = await source.guild.members.fetchMe();
 
-  if (!bot.permissions.has(PermissionFlagsBits.BanMembers)) {
-    const embed = createBanEmbed(
+  if (!bot.permissions.has(PermissionFlagsBits.ManageMessages)) {
+    const embed = createPurgeEmbed(
       false,
       config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} I do not have permission to ban members.`
+      `${config.emoji.error.default} I do not have permission to delete messages.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
-  const botHighestRole = bot.roles.highest.position;
-  const memberHighestRole = invoker.roles.highest.position;
-  const targetHighestRole = targetMember.roles.highest.position;
-
-  if (memberHighestRole <= targetHighestRole) {
-    const embed = createBanEmbed(
+  if (isNaN(amount) || amount < 1 || amount > 99) {
+    const embed = createPurgeEmbed(
       false,
-      config.message.error.roleHierarchy,
-      `${config.emoji.error.default} You cannot ban a member with a equal or higher role.`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  if (botHighestRole <= targetHighestRole) {
-    const embed = createBanEmbed(
-      false,
-      config.message.error.roleHierarchy,
-      `${config.emoji.error.default} I cannot ban a member with a equal or higher role.`
-    );
-
-    return await source.reply({embeds: [embed]});
-  }
-
-  if (!targetMember.bannable) {
-    const embed = createBanEmbed(
-      false,
-      config.message.error.insufficientPermissions,
-      `${config.emoji.error.default} I cannot ban that member.`
+      config.message.error.invalidArguments,
+      `${config.emoji.error.default} Purge amount should be a valid integer between 1 and 100.`
     );
 
     return await source.reply({embeds: [embed]});
   }
 
   try {
-    await source.client.users.send(targetMember.id, {
+    await source.channel.bulkDelete(amount + 1, true);
+    const channel = await source.client.channels.fetch(source.channelId);
+    const successMessage = await channel.send({
       embeds: [
         {
-          title: `${command.emoji} You were banned!`,
-          description: `You were banned from **${source.guild.name}** \n**Reason**: ${reason}`,
-          color: config.embed.color.red,
-        },
-      ],
-    });
-    await source.guild.members.ban(targetMember.id, {reason});
-    await source.reply({
-      embeds: [
-        {
-          title: `${command.emoji} Ban Successful`,
-          description: `${config.emoji.general.success} **${targetMember.user.tag}** was banned! \n**Reason**: ${reason}`,
+          title: `${command.emoji} Purge Successful`,
+          description: `${config.emoji.general.success} Purged **${amount}** messages.`,
           color: config.embed.color.green,
         },
       ],
     });
+
+    setTimeout(async () => {
+      await successMessage.delete();
+    }, 5_000);
+    return;
   } catch (error) {
     console.error(error);
-    await interaction.reply({
+    await source.reply({
       embeds: [
         {
           title: config.message.error.somethingWentWrong,
@@ -149,16 +105,12 @@ module.exports = {
     .setContexts(InteractionContextType.Guild),
 
   async execute(interaction) {
-    const targetMember = interaction.options.getMember(command.args[0].name);
-    const reason =
-      interaction.options.getString(command.args[1].name) ??
-      "No reason provided";
-
-    await banUser(interaction, interaction.member, targetMember, reason);
+    const amount = interaction.options.getInteger(command.args[0].name);
+    await purge(interaction, interaction.member, amount);
   },
 
   async prefix(message, args) {
-    const amount = parseInt(args[1]);
-    await purge(message, amount);
+    const amount = parseInt(args[0], 10);
+    await purge(message, message.member, amount);
   },
 };
