@@ -46,6 +46,8 @@ const createGameState = (
     runs: [0, 0],
     balls: [0, 0],
     finished: false,
+    choices: {},
+    eventLog: [],
   };
 };
 
@@ -74,12 +76,24 @@ const createInningEmbed = (gameState) => {
   const battingFirst = gameState.battingFirst;
   const battingSecond = gameState.players.find((id) => id !== battingFirst.id);
 
+  const header = `**${gameState.players[0]}** vs **${gameState.players[1]}**`;
+  const body = gameState.eventLog.join("\n");
+  const description = `${header}\n\n${body}`;
+
   const currentBatting = index === 0 ? battingFirst : battingSecond;
+
+  const choiceFields = Object.entries(gameState.choices || {}).map(
+    ([userId, hasPicked]) => ({
+      name: `<@${userId}>`,
+      value: hasPicked ? "🟢 Chosen" : "🔴 Waiting",
+      inline: true,
+    })
+  );
 
   const inningEmbed = {
     color: config.embed.color.purple,
     title: `🏏 Hand Cricket: ${gameState.inning == 1 ? "1st" : "2nd"} Inning`,
-    description: `**${gameState.players[0]}** vs **${gameState.players[1]}**`,
+    description: description,
     fields: [
       {
         name: "🏏 Current Batting",
@@ -93,6 +107,7 @@ const createInningEmbed = (gameState) => {
         name: "⚾ Balls",
         value: `${gameState.balls[index]} balls`,
       },
+      ...choiceFields,
     ],
   };
 
@@ -100,25 +115,29 @@ const createInningEmbed = (gameState) => {
 };
 
 async function playOneBall(channel, inningMessage, gameState) {
-  const embed = createInningEmbed(gameState);
-
-  await inningMessage.edit({
-    embeds: [embed],
-    components: [runButtons1, runButtons2],
-  });
-
   const batId =
     gameState.inning == 1
       ? gameState.battingFirst.id
-      : gameState.players.find((id) => id !== gameState.battingFirst.id).id;
+      : gameState.players.find(
+          (player) => player.id !== gameState.battingFirst.id
+        ).id;
 
-  const bowlId = gameState.players.find((id) => id !== batId).id;
+  const bowlId = gameState.players.find((player) => player.id !== batId).id;
 
-  const picks = {};
-  const filter = (i) =>
+  gameState.choices = {
+    [batId]: 0,
+    [bowlId]: 0,
+  };
+
+  await inningMessage.edit({
+    embeds: [createInningEmbed(gameState)],
+    components: [runButtons1, runButtons2],
+  });
+
+  const filter = (interaction) =>
     !gameState.finished &&
-    gameState.players.includes(i.user.id) &&
-    i.customId.startsWith("run_");
+    (interaction.user.id === batId || interaction.user.id === bowlId) &&
+    interaction.customId.startsWith("run_");
 
   const collector = channel.createMessageComponentCollector({
     max: 2,
@@ -128,33 +147,35 @@ async function playOneBall(channel, inningMessage, gameState) {
   });
 
   collector.on("collect", async (interaction) => {
-    await i.deferUpdate();
-
-    if (picks[interaction.user.id]) {
-      await interaction.reply({
+    const userId = interaction.user.id;
+    if (gameState.choices[userId]) {
+      return await interaction.reply({
         content: "You have already made your choice!",
         flags: MessageFlags.Ephemeral,
       });
     }
 
     const num = Number(interaction.customId.split("_")[1]);
-    picks[interaction.user.id] = num;
+    gameState.choices[userId] = num;
 
     await interaction.reply({
       content: `You picked **${num}**!`,
       flags: MessageFlags.Ephemeral,
     });
+
+    const updatedEmbed = createInningEmbed(gameState);
+    await inningMessage.edit({
+      embeds: [updatedEmbed],
+      components: [runButtons1, runButtons2],
+    });
   });
 
   const outcome = await new Promise((resolve) => {
     collector.on("end", () => {
-      const disabled = new ActionRowBuilder().addComponents(
-        row.components.map((btn) => ButtonBuilder.from(btn).setDisabled(true))
-      );
+      const picks = gameState.choices;
+      const allPicked = Object.values(picks).every((num) => num !== 0);
 
-      inningMessage.edit({components: [disabled]}).catch(() => {});
-
-      if (Object.keys(picks).length < 2) {
+      if (!allPicked || Object.keys(picks).length < 2) {
         return resolve({timeout: true});
       }
 
@@ -168,8 +189,12 @@ async function playOneBall(channel, inningMessage, gameState) {
       const batPick = picks[batId];
       const bowlPick = picks[bowlId];
 
-      if (Object.values(picks)[0] === Object.values(picks)[1]) {
-        updateGameState(gameState.channelId, "inning", gameState.inning + 1);
+      gameState.choices = {
+        [batId]: 0,
+        [bowlId]: 0,
+      };
+
+      if (batPick == bowlPick) {
         return resolve({wicket: true, batId: batId, pick: batPick});
       } else {
         updateGameState(
@@ -193,42 +218,41 @@ async function playOneBall(channel, inningMessage, gameState) {
 }
 
 const playOneInning = async (channel, inningMessage, gameState) => {
-  while (!gameState.finished) {
-    const outcome = await playOneBall(channel, gameState);
+  while (!gameState?.finished) {
+    const outcome = await playOneBall(channel, inningMessage, gameState);
 
-    if (outcome.timeout) {
+    if (outcome?.timeout) {
       await sendTimeoutEmbed(channel);
-      break;
+      return {timeout: true};
     }
 
-    if (outcome.wicket) {
+    if (outcome?.wicket) {
+      gameState.eventLog.push(
+        `💥 <@${outcome.batId}> is out! Both chose ${outcome.pick}`
+      );
       const embed = createInningEmbed(gameState);
-      embed.description += `\n💥 <@${outcome.batId}> is out! Both chose ${outcome.pick}`;
       embed.color = config.embed.color.red;
       await inningMessage.edit({
         embeds: [embed],
         components: [],
       });
 
-      break;
+      return {timeout: false};
     }
 
-    const embed = createInningEmbed(gameState);
-    updateGameState(
-      gameState.channelId,
-      "runs",
-      gameState.runs[gameState.inning - 1] + outcome.batPick,
-      gameState.inning - 1
+    gameState.eventLog.push(
+      `**${outcome.batPick}** runs! Bowler chose ${outcome.bowlPick}`
     );
-
-    embed.description += `\n**${outcome.batPick}** runs! Bowler chose ${outcome.bowlPick}`;
+    const embed = createInningEmbed(gameState);
     await inningMessage.edit({
       embeds: [embed],
       components: [runButtons1, runButtons2],
     });
 
     if (gameState.inning === 2 && gameState.runs[1] > gameState.runs[0]) {
-      break;
+      gameState.eventLog = [];
+      gameState.finished = true;
+      return {timeout: false};
     }
   }
 };
@@ -285,7 +309,6 @@ const startMatch = async (source, player1, player2) => {
     await tossMessage.edit({
       embeds: [tossEmbed],
       components: [buttonRow],
-      withResponse: true,
     });
 
     const userChoices = new Map();
@@ -331,24 +354,39 @@ const startMatch = async (source, player1, player2) => {
           components: [],
         });
 
-        choiceCollector.stop();
+        choiceCollector.stop("choiceMade");
 
         const firstInningEmbed = createInningEmbed(gameState);
         const firstInningMessage = await channel.send({
           embeds: [firstInningEmbed],
           components: [runButtons1, runButtons2],
+          withResponse: true,
         });
 
-        await playOneInning(channel, firstInningMessage, gameState);
-        updateGameState(gameId, "inning", 2);
+        const inningOne = await playOneInning(
+          channel,
+          firstInningMessage,
+          gameState
+        );
+
+        if (inningOne.timeout) return;
+        gameState.inning = 2;
+        gameState.eventLog = [];
 
         const secondInningEmbed = createInningEmbed(gameState);
         const secondInningMessage = await channel.send({
           embeds: [secondInningEmbed],
           components: [runButtons1, runButtons2],
+          withResponse: true,
         });
 
-        await playOneInning(channel, secondInningMessage, gameState);
+        const inningTwo = await playOneInning(
+          channel,
+          secondInningMessage,
+          gameState
+        );
+
+        if (inningTwo.timeout) return;
 
         const runs = gameState.runs;
         const winnerEmbed = {
@@ -404,6 +442,8 @@ const startMatch = async (source, player1, player2) => {
             embeds: [tossEmbed],
             components: [],
           });
+        } else if (reason === "choiceMade") {
+          return;
         } else {
           console.error("Collector ended due to unknown reason: ", reason);
         }
