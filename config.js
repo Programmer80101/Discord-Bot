@@ -127,5 +127,18 @@ module.exports = {
         default: `Use ${prefix}embed to create an embed message.`,
       },
     },
+    fun: {
+      kill: {
+        default: `Use ${prefix}kill (user) to kill a user.`,
+      },
+    },
+    games: {
+      handcricket: {
+        default: `Use ${prefix}handcricket to play a game of hand cricket.`,
+        rules: `Use ${prefix}handcricket rules to see the rules of the game.`,
+        score: `Use ${prefix}handcricket score to see the current score.`,
+        stats: `Use ${prefix}handcricket stats to see your stats.`,
+      },
+    },
   },
 };

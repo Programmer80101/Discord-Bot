@@ -6,11 +6,12 @@ const {
   ComponentType,
 } = require("discord.js");
 const {SlashCommandBuilder} = require("discord.js");
+const {createCommandGuideEmbed} = require("../../utils");
 const commandsData = require("../../commands");
 const config = require("../../config");
 
 const games = new Map();
-const command = commandsData.games.commands.handCricket;
+const command = commandsData.games.commands.handcricket;
 
 const runButtons1 = new ActionRowBuilder().addComponents(
   [1, 2, 3].map((n) =>
@@ -73,14 +74,18 @@ const sendTimeoutEmbed = async (channel) => {
 
 const createInningEmbed = (gameState) => {
   const index = gameState.inning - 1;
-  const battingFirst = gameState.battingFirst;
-  const battingSecond = gameState.players.find((id) => id !== battingFirst.id);
+  const batId =
+    gameState.inning == 1
+      ? gameState.battingFirst.id
+      : gameState.players.find(
+          (player) => player.id !== gameState.battingFirst.id
+        ).id;
 
   const header = `**${gameState.players[0]}** vs **${gameState.players[1]}**`;
   const body = gameState.eventLog.join("\n");
   const description = `${header}\n\n${body}`;
 
-  const currentBatting = index === 0 ? battingFirst : battingSecond;
+  const currentBatting = `<@${batId}>`;
 
   const choiceFields = Object.entries(gameState.choices || {}).map(
     ([userId, hasPicked]) => ({
@@ -97,7 +102,7 @@ const createInningEmbed = (gameState) => {
     fields: [
       {
         name: "🏏 Current Batting",
-        value: currentBatting.toString(),
+        value: currentBatting,
       },
       {
         name: "🏃 Runs",
@@ -114,16 +119,7 @@ const createInningEmbed = (gameState) => {
   return inningEmbed;
 };
 
-async function playOneBall(channel, inningMessage, gameState) {
-  const batId =
-    gameState.inning == 1
-      ? gameState.battingFirst.id
-      : gameState.players.find(
-          (player) => player.id !== gameState.battingFirst.id
-        ).id;
-
-  const bowlId = gameState.players.find((player) => player.id !== batId).id;
-
+async function playOneBall(channel, inningMessage, gameState, batId, bowlId) {
   gameState.choices = {
     [batId]: 0,
     [bowlId]: 0,
@@ -218,8 +214,23 @@ async function playOneBall(channel, inningMessage, gameState) {
 }
 
 const playOneInning = async (channel, inningMessage, gameState) => {
+  const batId =
+    gameState.inning == 1
+      ? gameState.battingFirst.id
+      : gameState.players.find(
+          (player) => player.id !== gameState.battingFirst.id
+        ).id;
+
+  const bowlId = gameState.players.find((player) => player.id !== batId).id;
+
   while (!gameState?.finished) {
-    const outcome = await playOneBall(channel, inningMessage, gameState);
+    const outcome = await playOneBall(
+      channel,
+      inningMessage,
+      gameState,
+      batId,
+      bowlId
+    );
 
     if (outcome?.timeout) {
       await sendTimeoutEmbed(channel);
@@ -250,7 +261,7 @@ const playOneInning = async (channel, inningMessage, gameState) => {
     });
 
     if (gameState.inning === 2 && gameState.runs[1] > gameState.runs[0]) {
-      gameState.eventLog = [];
+      gameState.eventLog = ["Second inning completed!"];
       gameState.finished = true;
       return {timeout: false};
     }
@@ -258,6 +269,11 @@ const playOneInning = async (channel, inningMessage, gameState) => {
 };
 
 const startMatch = async (source, player1, player2) => {
+  if (!player2) {
+    const embed = createCommandGuideEmbed(command.name);
+    return await source.reply({embeds: [embed]});
+  }
+
   const gameId = source.channelId;
   if (games.has(gameId)) {
     return await source.reply({
@@ -371,7 +387,7 @@ const startMatch = async (source, player1, player2) => {
 
         if (inningOne.timeout) return;
         gameState.inning = 2;
-        gameState.eventLog = [];
+        gameState.eventLog = ["Second inning started!"];
 
         const secondInningEmbed = createInningEmbed(gameState);
         const secondInningMessage = await channel.send({

@@ -408,7 +408,7 @@ module.exports = {
     name: "Games",
     description: `These are some games that you can play with friends!`,
     commands: {
-      handCricket: {
+      handcricket: {
         name: "handcricket",
         emoji: "🏏",
         description: "Play hand cricket with your friends!",

@@ -1,4 +1,3 @@
-const {parse} = require("dotenv");
 const commandsData = require("./commands.js");
 const config = require("./config.js");
 
@@ -10,6 +9,7 @@ function toCamelCase(str) {
 }
 
 const getRandomValue = (obj) => {
+  console.log(obj);
   const keys = Object.keys(obj);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
   return obj[randomKey];
@@ -70,14 +70,17 @@ const createCommandGuideEmbed = (name) => {
           {
             name: "📁 Category",
             value: category.name,
+            inline: true,
           },
           {
             name: "🪪 Name",
             value: `${cmd.emoji} ${cmd.name}`,
+            inline: true,
           },
           {
             name: "ℹ️ Description",
             value: cmd.description || "No description provided.",
+            inline: false,
           },
         ];
 
@@ -85,6 +88,7 @@ const createCommandGuideEmbed = (name) => {
           fields.push({
             name: "🔀 Aliases",
             value: cmd.aliases.map((a) => `\`${a}\``).join(", "),
+            inline: false,
           });
         }
 
@@ -92,6 +96,7 @@ const createCommandGuideEmbed = (name) => {
           fields.push({
             name: "⚙️ Usage",
             value: `\`${cmd.usage}\``,
+            inline: false,
           });
         }
 
@@ -99,6 +104,7 @@ const createCommandGuideEmbed = (name) => {
           fields.push({
             name: "📄 Note",
             value: cmd.notes.join("\n"),
+            inline: false,
           });
         }
 
@@ -106,6 +112,7 @@ const createCommandGuideEmbed = (name) => {
           fields.push({
             name: "⏱️ Cooldown",
             value: `${cmd.cooldown}s`,
+            inline: true,
           });
         }
 
