@@ -26,13 +26,13 @@ module.exports = {
     },
   },
   server: {
-    id: "1168944263413891082",
+    id: "1372890783417630810",
   },
   channel: {
     log: "",
   },
   allowed: {
-    channels: ["1363436838290985161"],
+    channels: ["1372923613258321991"],
   },
   emoji: {
     general: {

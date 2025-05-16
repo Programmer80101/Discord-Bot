@@ -2,6 +2,7 @@ require("dotenv").config();
 const {Client, GatewayIntentBits, Collection} = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
+const axios = require("axios");
 
 const express = require("express");
 const app = express();
@@ -20,7 +21,7 @@ app.listen(PORT, () => {
 const pingUrl = process.env.URL + "/ping";
 setInterval(async () => {
   try {
-    await fetch(pingUrl);
+    await axios.get(pingUrl);
   } catch (error) {
     console.log("❌ Self Ping failed: ", error);
   }
