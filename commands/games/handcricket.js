@@ -386,8 +386,6 @@ const startMatch = async (source, player1, player2) => {
         );
 
         if (inningOne.timeout) return;
-        gameState.inning = 2;
-        gameState.eventLog = ["Second inning started!"];
 
         const secondInningEmbed = createInningEmbed(gameState);
         const secondInningMessage = await channel.send({
@@ -395,6 +393,9 @@ const startMatch = async (source, player1, player2) => {
           components: [runButtons1, runButtons2],
           withResponse: true,
         });
+
+        gameState.inning = 2;
+        gameState.eventLog = ["Second inning started!"];
 
         const inningTwo = await playOneInning(
           channel,
@@ -425,6 +426,7 @@ const startMatch = async (source, player1, player2) => {
 
         if (runs[0] > runs[1]) {
           winnerEmbed.description = `🎉 ${battingFirst} won the match!`;
+          winnerEmbed.description += `\n${battingFirst} won the match by chasing the target!`;
           winnerEmbed.fields = [
             {
               name: "🏆 Winner",
@@ -435,6 +437,9 @@ const startMatch = async (source, player1, player2) => {
 
         if (runs[0] < runs[1]) {
           winnerEmbed.description = `🎉 ${battingSecond} won the match!`;
+          winnerEmbed.description += `\n${battingSecond} won by ${
+            runs[1] - runs[0]
+          } runs!`;
           winnerEmbed.fields = [
             {
               name: "🏆 Winner",

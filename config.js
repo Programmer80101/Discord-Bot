@@ -3,7 +3,7 @@ require("dotenv").config();
 const prefix = "!";
 
 module.exports = {
-  name: process.env.NODE_ENV !== "dev" ? "Ash Greninja" : "Greninja",
+  name: process.env.NODE_ENV !== "dev" ? "Test Bot" : "Dev Bot",
   prefix: prefix,
   iconURL: "https://images.app.goo.gl/6uZ9YvYERfWabBS27",
   cooldown: {
@@ -116,28 +116,6 @@ module.exports = {
       },
       unban: {
         default: `Use ${prefix}unban (user) (reason) to unban a user.`,
-      },
-    },
-    botUtility: {
-      echo: {
-        default: `Use ${prefix}echo (message) to send a message in the channel.`,
-        channel: `Use ${prefix}echo (message) [channel] to send a message in a specific channel.`,
-      },
-      embed: {
-        default: `Use ${prefix}embed to create an embed message.`,
-      },
-    },
-    fun: {
-      kill: {
-        default: `Use ${prefix}kill (user) to kill a user.`,
-      },
-    },
-    games: {
-      handcricket: {
-        default: `Use ${prefix}handcricket to play a game of hand cricket.`,
-        rules: `Use ${prefix}handcricket rules to see the rules of the game.`,
-        score: `Use ${prefix}handcricket score to see the current score.`,
-        stats: `Use ${prefix}handcricket stats to see your stats.`,
       },
     },
   },
