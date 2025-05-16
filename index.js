@@ -24,7 +24,7 @@ setInterval(async () => {
   } catch (error) {
     console.log("❌ Self Ping failed: ", error);
   }
-}, 10 * 60 * 1000);
+}, 1 * 60 * 1000);
 
 // Bot Setup
 
