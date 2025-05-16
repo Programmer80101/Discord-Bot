@@ -6,14 +6,27 @@ const path = require("node:path");
 const express = require("express");
 const app = express();
 
+// Endpoints
 app.get("/ping", (req, res) => {
-  res.send("Pong!");
+  res.sendStatus(200);
 });
 
 const PORT = process.env.PORT || 10_000;
 app.listen(PORT, () => {
   console.log(`✅ Server started at port: ${PORT}`);
 });
+
+// Self Ping
+const pingUrl = process.env.URL + "/ping";
+setInterval(async () => {
+  try {
+    await fetch(pingUrl);
+  } catch (error) {
+    console.log("❌ Self Ping failed: ", error);
+  }
+}, 10 * 60 * 1000);
+
+// Bot Setup
 
 const client = new Client({
   intents: [
