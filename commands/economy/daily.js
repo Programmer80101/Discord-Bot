@@ -1,6 +1,6 @@
 const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
-const {SlashCommandBuilder, EmbedBuilder} = require("discord.js");
+const {SlashCommandBuilder} = require("discord.js");
 const commandsData = require("../../commands");
 const {getRandomTip} = require("../../utils");
 const {getLastDaily, setLastDaily, addBalance} = require("../../db");
@@ -9,8 +9,8 @@ const config = require("../../config");
 dayjs.extend(relativeTime);
 
 const command = commandsData.economy.commands.daily;
-const COOLDOWN_HOURS = 23;
-const DAILY_AMOUNT = 10;
+const COOLDOWN_HOURS = config.economy.daily.cooldown;
+const DAILY_AMOUNT = config.economy.daily.amount;
 
 const getDaily = async (source, user) => {
   const now = dayjs();

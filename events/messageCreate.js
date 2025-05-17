@@ -1,12 +1,43 @@
 require("dotenv").config();
 const {Events, Collection} = require("discord.js");
+const {addBalance} = require("../db");
 const config = require("../config");
 const prefix = config.prefix;
+
+const lastDropTimestamps = new Map();
 
 module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
-    if (!message.content.startsWith(prefix) || message.author.bot) return;
+    if (message.author.bot) return;
+    if (message.channel.id == config.economy.coinDrop.channel.id) {
+      const now = Date.now();
+      const last = lastDropTimestamps.get(message.author.id) || 0;
+      if (now - last < config.economy.coinDrop.cooldown) return;
+      lastDropTimestamps.set(message.author.id, now);
+
+      if (Math.random() >= config.economy.coinDrop.chance) return;
+
+      const winAmount = 10;
+      await addBalance(message.author.id, winAmount);
+
+      await message.reply({
+        content: `You won ${config.emoji.general.coin} **${winAmount}** coins for chatting!`,
+      });
+    }
+
+    if (!message.content.startsWith(prefix)) return;
+
+    if (
+      process.env.NODE_ENV != "dev" &&
+      !config.strictlyAllowed.channels.includes(message.channel.id)
+    ) {
+      return await message.reply({
+        content: `You can't use my commands here! 
+        \nThey are available to use in <#${config.strictlyAllowed.channels[0]}>`,
+      });
+    }
+
     if (
       process.env.NODE_ENV == "dev" &&
       !config.allowed.channels.includes(message.channel.id)

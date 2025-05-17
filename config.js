@@ -1,3 +1,5 @@
+const {economy} = require("./commands");
+
 require("dotenv").config();
 
 const prefix = "!";
@@ -9,6 +11,20 @@ module.exports = {
   cooldown: {
     default: 1,
     mod: 10,
+    economy: 3,
+  },
+  economy: {
+    daily: {
+      amount: 10,
+      cooldown: 23,
+    },
+    coinDrop: {
+      channel: {
+        id: "1372890783895519285",
+      },
+      chance: 0.3,
+      cooldown: 60 * 1000,
+    },
   },
   owner: {
     id: "855342398115414037",
@@ -30,6 +46,9 @@ module.exports = {
   },
   channel: {
     log: "",
+  },
+  strictlyAllowed: {
+    channels: ["1372951737341575288"],
   },
   allowed: {
     channels: ["1372923613258321991"],
