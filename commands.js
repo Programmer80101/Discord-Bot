@@ -314,4 +314,50 @@ module.exports = {
       },
     },
   },
+  economy: {
+    emoji: "💰",
+    name: "Economy",
+    description: "Economy commands for coins.",
+    footer: "These commands are available for all users.",
+    commands: {
+      balance: {
+        name: "balance",
+        emoji: "🪙",
+        description: "Get your current balance.",
+        aliases: ["balance", "bal"],
+        usage: `${prefix}balance [user]`,
+        args: [
+          {
+            name: "user",
+            type: "user",
+            required: false,
+            description: "The user to get balance of",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}user`,
+            note: "Shows your current balance.",
+          },
+          {
+            command: `${prefix}user @username`,
+            note: "Shows the current balance of the mentioned user.",
+          },
+        ],
+      },
+      daily: {
+        name: "daily",
+        emoji: "🪙",
+        description: "Collect your daily coins",
+        aliases: ["daily"],
+        usage: `${prefix}daily`,
+        examples: [
+          {
+            command: `${prefix}daily`,
+            note: "Collect your daily balance",
+          },
+        ],
+      },
+    },
+  },
 };

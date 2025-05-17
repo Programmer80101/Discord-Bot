@@ -33,7 +33,7 @@ const getUserEmbed = async (user, member) => {
 
   const embed = {
     color: config.embed.color.default,
-    title: `User: ${user.tag}`,
+    title: `User: ${user}`,
     description: "",
     fields: [
       {

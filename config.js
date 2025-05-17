@@ -118,5 +118,14 @@ module.exports = {
         default: `Use ${prefix}unban (user) (reason) to unban a user.`,
       },
     },
+    economy: {
+      balance: {
+        default: `Use ${prefix}balance to check your balance`,
+        user: `Use ${prefix}balance [user] to check a user's balance`,
+      },
+      daily: {
+        default: `Use ${prefix}daily to collect your daily free coins!`,
+      },
+    },
   },
 };
