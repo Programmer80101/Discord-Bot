@@ -30,23 +30,22 @@ module.exports = {
 
     if (
       process.env.NODE_ENV == "dev" &&
-      !config.allowed.channels.includes(message.channel.id)
+      !config.dev.channels.includes(message.channel.id)
     )
       return;
 
     if (
       process.env.NODE_ENV !== "dev" &&
-      config.allowed.channels.includes(message.channel.id)
+      config.dev.channels.includes(message.channel.id)
     )
       return;
 
     if (
       process.env.NODE_ENV != "dev" &&
-      !config.strictlyAllowed.channels.includes(message.channel.id)
+      !config.allowed.channels.includes(message.channel.id)
     ) {
       return await message.reply({
-        content: `You can't use my commands here! 
-        \nThey are available to use in <#${config.strictlyAllowed.channels[0]}>`,
+        content: `You can't use my commands here! \nThey are available to use in <#${config.allowed.channels[0]}>`,
       });
     }
 

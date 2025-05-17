@@ -34,6 +34,7 @@ const getDaily = async (source, user) => {
           text: getRandomTip(commandsData.economy.name, command.name),
         },
       };
+
       return await source.reply({
         embeds: [dailyEmbed],
       });

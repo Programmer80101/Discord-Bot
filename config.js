@@ -47,10 +47,10 @@ module.exports = {
   channel: {
     log: "",
   },
-  strictlyAllowed: {
+  allowed: {
     channels: ["1372951737341575288"],
   },
-  allowed: {
+  dev: {
     channels: ["1372923613258321991"],
   },
   emoji: {
