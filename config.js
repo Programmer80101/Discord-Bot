@@ -23,7 +23,7 @@ module.exports = {
         id: "1372890783895519285",
       },
       chance: 0.3,
-      cooldown: 60 * 1000,
+      cooldown: 30 * 1000,
     },
   },
   owner: {

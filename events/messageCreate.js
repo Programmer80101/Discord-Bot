@@ -13,17 +13,18 @@ module.exports = {
     if (message.channel.id == config.economy.coinDrop.channel.id) {
       const now = Date.now();
       const last = lastDropTimestamps.get(message.author.id) || 0;
-      if (now - last < config.economy.coinDrop.cooldown) return;
-      lastDropTimestamps.set(message.author.id, now);
+      if (now - last > config.economy.coinDrop.cooldown) {
+        if (Math.random() <= config.economy.coinDrop.chance) {
+          lastDropTimestamps.set(message.author.id, now);
 
-      if (Math.random() >= config.economy.coinDrop.chance) return;
+          const winAmount = 10;
+          await addBalance(message.author.id, winAmount);
 
-      const winAmount = 10;
-      await addBalance(message.author.id, winAmount);
-
-      await message.reply({
-        content: `You won ${config.emoji.general.coin} **${winAmount}** coins for chatting!`,
-      });
+          await message.reply({
+            content: `You won ${config.emoji.general.coin} **${winAmount}** coins for chatting!`,
+          });
+        }
+      }
     }
 
     if (!message.content.startsWith(prefix)) return;
