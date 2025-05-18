@@ -1,17 +1,21 @@
-const {economy} = require("./commands");
-
 require("dotenv").config();
 
 const prefix = "!";
+const isDev = process.env.NODE_ENV == "dev";
 
 module.exports = {
-  name: process.env.NODE_ENV !== "dev" ? "Test Bot" : "Dev Bot",
+  name: !isDev ? "Dev Bot" : "Test Bot",
+  isDev: isDev,
+  isProd: !isDev,
   prefix: prefix,
   iconURL: "https://images.app.goo.gl/6uZ9YvYERfWabBS27",
   cooldown: {
     default: 1,
     mod: 10,
     economy: 3,
+  },
+  db: {
+    url: isDev ? process.env.DEV_DB_URL : process.env.DB_URL,
   },
   economy: {
     daily: {

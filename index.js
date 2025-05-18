@@ -1,7 +1,7 @@
 require("dotenv").config();
+require("./db");
 const {Client, GatewayIntentBits, Collection} = require("discord.js");
 const fs = require("node:fs");
-const db = require("./db");
 const path = require("node:path");
 const axios = require("axios");
 
