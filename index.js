@@ -8,6 +8,10 @@ const axios = require("axios");
 const express = require("express");
 const app = express();
 
+// Scripts Ctrl + K to toggle
+
+// require("./scripts/shopItems");
+
 // Endpoints
 app.get("/ping", (req, res) => {
   res.sendStatus(200);

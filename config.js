@@ -14,9 +14,6 @@ module.exports = {
     mod: 10,
     economy: 3,
   },
-  db: {
-    url: isDev ? process.env.DEV_DB_URL : process.env.DB_URL,
-  },
   economy: {
     daily: {
       amount: 10,
@@ -30,6 +27,8 @@ module.exports = {
       cooldown: 30 * 1000,
     },
   },
+  shopItems: ["auto_response", "custom_role"],
+  items: {},
   owner: {
     id: "855342398115414037",
     name: "Pikachu",

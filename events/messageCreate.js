@@ -1,6 +1,6 @@
 require("dotenv").config();
 const {Events, Collection} = require("discord.js");
-const {addBalance} = require("../db");
+const {addBalance} = require("../utils/balance");
 const config = require("../config");
 const prefix = config.prefix;
 

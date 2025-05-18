@@ -1,7 +1,7 @@
 const {SlashCommandBuilder} = require("discord.js");
 const commandsData = require("../../commands");
 const {getRandomTip} = require("../../utils");
-const {getBalance} = require("../../db");
+const {getBalance} = require("../../utils/balance");
 const config = require("../../config");
 
 const command = commandsData.economy.commands.balance;

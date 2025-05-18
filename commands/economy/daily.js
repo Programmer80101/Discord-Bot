@@ -1,9 +1,10 @@
 const dayjs = require("dayjs");
 const relativeTime = require("dayjs/plugin/relativeTime");
 const {SlashCommandBuilder} = require("discord.js");
+const {getLastDaily, setLastDaily} = require("../../utils/daily");
+const {addBalance} = require("../../utils/balance");
 const commandsData = require("../../commands");
 const {getRandomTip} = require("../../utils");
-const {getLastDaily, setLastDaily, addBalance} = require("../../db");
 const config = require("../../config");
 
 dayjs.extend(relativeTime);
