@@ -138,6 +138,40 @@ module.exports = {
           },
         ],
       },
+      shop: {
+        name: "shop",
+        emoji: "🛍️",
+        description: "Check out the shop for cool items!",
+        aliases: ["shop"],
+        usage: `${prefix}shop`,
+        examples: [
+          {
+            command: `${prefix}shop`,
+            note: "Check out the shop for cool items!",
+          },
+        ],
+      },
+      buy: {
+        name: "buy",
+        emoji: "🛒",
+        description: "Buy ",
+        aliases: ["buy"],
+        usage: `${prefix}buy (item-name)`,
+        args: [
+          {
+            name: "item-name",
+            type: "string",
+            required: true,
+            description: "The item that you want to buy!",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}shop`,
+            note: "The item that you want to buy!",
+          },
+        ],
+      },
     },
   },
 };

@@ -28,7 +28,6 @@ module.exports = {
     },
   },
   shopItems: ["auto_response", "custom_role"],
-  items: {},
   owner: {
     id: "855342398115414037",
     name: "Pikachu",

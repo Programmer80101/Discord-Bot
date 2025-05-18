@@ -7,9 +7,9 @@ const config = require("../../config");
 const command = commandsData.basic.commands.botInfo;
 
 const thresholds = {
-  cpu: [70, 85],
-  memory: [75, 90],
-  ping: [600, 1000],
+  cpu: [60, 80],
+  memory: [60, 80],
+  ping: [60, 120],
 };
 
 const getInfoEmbed = async (client) => {
