@@ -10,6 +10,13 @@ module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
     if (message.author.bot) return;
+    if (!message.guild) {
+      return await message.reply({
+        content: `You can only use my commands in <#${config.allowed.channels[0]}>!`,
+      });
+    }
+
+    if (message.guild.id !== config.server.id) return;
     if (message.channel.id == config.economy.coinDrop.channel.id) {
       const now = Date.now();
       const last = lastDropTimestamps.get(message.author.id) || 0;
@@ -17,7 +24,7 @@ module.exports = {
         if (Math.random() <= config.economy.coinDrop.chance) {
           lastDropTimestamps.set(message.author.id, now);
 
-          const winAmount = 10;
+          const winAmount = Math.ceil(Math.random() * 10);
           await addBalance(message.author.id, winAmount);
 
           await message.reply({
@@ -28,23 +35,7 @@ module.exports = {
     }
 
     if (!message.content.startsWith(prefix)) return;
-
-    if (
-      process.env.NODE_ENV == "dev" &&
-      !config.dev.channels.includes(message.channel.id)
-    )
-      return;
-
-    if (
-      process.env.NODE_ENV !== "dev" &&
-      config.dev.channels.includes(message.channel.id)
-    )
-      return;
-
-    if (
-      process.env.NODE_ENV != "dev" &&
-      !config.allowed.channels.includes(message.channel.id)
-    ) {
+    if (!config.allowed.channels.includes(message.channel.id)) {
       return await message.reply({
         content: `You can't use my commands here! \nThey are available to use in <#${config.allowed.channels[0]}>`,
       });

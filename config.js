@@ -1,4 +1,4 @@
-require("dotenv").config();
+require("./env.js");
 
 const prefix = "!";
 const isDev = process.env.NODE_ENV == "dev";
@@ -21,9 +21,9 @@ module.exports = {
     },
     coinDrop: {
       channel: {
-        id: "1372890783895519285",
+        id: isDev ? "1372890783895519285" : "1320040091892056115",
       },
-      chance: 0.3,
+      chance: 0.05,
       cooldown: 30 * 1000,
     },
   },
@@ -44,16 +44,17 @@ module.exports = {
     },
   },
   server: {
-    id: "1372890783417630810",
+    id: isDev ? "1372890783417630810" : "1304614532265672745",
+  },
+  allowed: {
+    channels: [
+      "1320040095910465637",
+      "1372951737341575288",
+      "1372923613258321991",
+    ],
   },
   channel: {
     log: "",
-  },
-  allowed: {
-    channels: ["1372951737341575288"],
-  },
-  dev: {
-    channels: ["1372923613258321991"],
   },
   emoji: {
     general: {
@@ -79,6 +80,7 @@ module.exports = {
       label: "🏷️",
       bookmark: "🔖",
       coin: "🪙",
+      wrldCoin: "<:WrldCoin:1325200283411939328>",
       in: "📥",
       out: "📤",
       success: "✅",

@@ -1,7 +1,7 @@
 {
   "scripts": {
-    "start": "node .",
-    "dev": "nodemon .",
+    "start": "NODE_ENV=prod node .",
+    "dev": "NODE_ENV=dev nodemon .",
     "reload": "node deploy-commands.js"
   },
   "name": "ash-greninja-discord-bot",
