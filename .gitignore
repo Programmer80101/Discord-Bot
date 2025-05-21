@@ -1,3 +1,5 @@
-.env
+# Environment variables
+.env*
+
+# Node modules
 node_modules
-config.json

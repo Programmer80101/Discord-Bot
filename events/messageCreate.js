@@ -1,5 +1,7 @@
 require("dotenv").config();
 const {Events, Collection} = require("discord.js");
+const commandsData = require("../commands");
+const {getRandomTip} = require("../utils");
 const {addBalance} = require("../utils/balance");
 const config = require("../config");
 const prefix = config.prefix;
@@ -27,15 +29,31 @@ module.exports = {
           const winAmount = Math.ceil(Math.random() * 10);
           await addBalance(message.author.id, winAmount);
 
-          await message.reply({
-            content: `You won ${config.emoji.general.coin} **${winAmount}** coins for chatting!`,
-          });
+          const winEmbed = {
+            color: config.embed.color.gold,
+            title: "💰 Coin Drop!",
+            description: `You won ${config.emoji.general.currency} **${winAmount}** coins for chatting!`,
+            footer: {
+              text: getRandomTip(commandsData.economy.name),
+            },
+          };
+
+          await message.reply({embeds: [winEmbed]});
         }
       }
     }
 
     if (!message.content.startsWith(prefix)) return;
-    if (!config.allowed.channels.includes(message.channel.id)) {
+
+    const channel = message.channel;
+    const channelId = message.channelId;
+    const channelName = channel?.name?.toLowerCase() ?? "";
+    const allowedChannels = config.allowed.channels;
+
+    if (
+      !allowedChannels.includes(channelId) &&
+      !channelName.includes("ticket")
+    ) {
       return await message.reply({
         content: `You can't use my commands here! \nThey are available to use in <#${config.allowed.channels[0]}>`,
       });

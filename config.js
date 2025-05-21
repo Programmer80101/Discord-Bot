@@ -1,4 +1,4 @@
-require("./env.js");
+require("dotenv").config();
 
 const prefix = "!";
 const isDev = process.env.NODE_ENV == "dev";
@@ -27,10 +27,13 @@ module.exports = {
       cooldown: 30 * 1000,
     },
   },
-  shopItems: ["auto_response", "custom_role"],
   owner: {
     id: "855342398115414037",
     name: "Pikachu",
+  },
+  ownerAlt: {
+    id: "1369969377235046400",
+    name: "Charizard",
   },
   embed: {
     color: {
@@ -56,6 +59,7 @@ module.exports = {
   channel: {
     log: "",
   },
+  items: {},
   emoji: {
     general: {
       duration: "⏱️",
@@ -80,15 +84,15 @@ module.exports = {
       label: "🏷️",
       bookmark: "🔖",
       coin: "🪙",
-      wrldCoin: "<:WrldCoin:1325200283411939328>",
+      currency: "<:WrldCoin:1373929792755339366>",
       in: "📥",
       out: "📤",
       success: "✅",
       error: "❌",
     },
   },
-  message: {
-    error: {
+  errors: {
+    mod: {
       somethingWentWrong: "⚠️ Something went wrong",
       selfSabotage: "🔰 Self Sabotage",
       roleHierarchy: "📊 Improper Role Heirarchy",

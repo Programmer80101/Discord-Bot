@@ -8,6 +8,14 @@ function toCamelCase(str) {
     .replace(/^./, (ch) => ch.toLowerCase());
 }
 
+function getItemId(name) {
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^-+|-+$/g, "");
+}
+
 const getRandomValue = (obj) => {
   const keys = Object.keys(obj);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
@@ -160,6 +168,7 @@ const createCommandGuideEmbed = (name) => {
 module.exports = {
   createCommandGuideEmbed,
   parseTime,
+  getItemId,
   getRandomTip,
   getRandomValue,
 };

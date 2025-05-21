@@ -4,16 +4,7 @@ const config = require("../config");
 module.exports = {
   name: Events.InteractionCreate,
   async execute(interaction) {
-    if (!interaction.isChatInputCommand()) return;
-    if (
-      process.env.NODE_ENV == "dev" &&
-      !config.allowed.channels.includes(interaction.channelId)
-    ) {
-      return interaction.reply({
-        content: "❌ You cannot use this command.",
-        flags: MessageFlags.Ephemeral,
-      });
-    }
+    if (interaction.isMessageComponent()) return;
 
     const command = interaction.client.commands.get(interaction.commandName);
 
@@ -22,6 +13,33 @@ module.exports = {
         `No command matching ${interaction.commandName} was found.`
       );
       return;
+    }
+
+    if (interaction.isAutocomplete()) {
+      try {
+        await command.autocomplete(interaction);
+      } catch (error) {
+        console.error(error);
+      }
+
+      return;
+    }
+
+    if (!interaction.isChatInputCommand()) return;
+
+    const channel = interaction.channel;
+    const channelId = interaction.channelId;
+    const channelName = channel?.name?.toLowerCase() ?? "";
+    const allowedChannels = config.allowed.channels;
+
+    if (
+      !allowedChannels.includes(channelId) &&
+      !channelName.includes("ticket")
+    ) {
+      return await interaction.reply({
+        content: `${config.emoji.general.error} You can't use my commands here! \nThey are available to use in <#${config.allowed.channels[0]}>`,
+        flags: MessageFlags.Ephemeral,
+      });
     }
 
     const {cooldowns} = interaction.client;
@@ -56,7 +74,7 @@ module.exports = {
     } catch (error) {
       console.error(error);
       await interaction.reply({
-        content: `Something went wrong while executing the command. \nContact <@${config.owner.id}>to resolve this issue!`,
+        content: `${config.emoji.general.error} Something went wrong while executing the command. Contact <@${config.owner.id}>to resolve this issue!`,
       });
     }
   },

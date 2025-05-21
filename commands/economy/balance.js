@@ -15,7 +15,7 @@ const sendBalance = async (source, user) => {
     fields: [
       {
         name: "Balance",
-        value: `${config.emoji.general.coin} ${balance}`,
+        value: `${config.emoji.general.currency} ${balance}`,
       },
     ],
     footer: {
@@ -39,12 +39,14 @@ module.exports = {
     }),
 
   async execute(interaction) {
-    const user = interaction.user;
+    const user =
+      interaction.options.getUser(command.args[0].name) || interaction.user;
     await sendBalance(interaction, user);
   },
 
   async prefix(message) {
-    const user = message.author;
+    const mentioned = message.mentions.users.first();
+    const user = mentioned || message.author;
     await sendBalance(message, user);
   },
 };

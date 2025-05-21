@@ -103,6 +103,7 @@ module.exports = {
       balance: {
         name: "balance",
         emoji: "🪙",
+        cooldown: 3,
         description: "Get your current balance.",
         aliases: ["balance", "bal"],
         usage: `${prefix}balance [user]`,
@@ -128,6 +129,7 @@ module.exports = {
       daily: {
         name: "daily",
         emoji: "🪙",
+        cooldown: 5,
         description: "Collect your daily coins",
         aliases: ["daily"],
         usage: `${prefix}daily`,
@@ -141,6 +143,7 @@ module.exports = {
       shop: {
         name: "shop",
         emoji: "🛍️",
+        cooldown: 5,
         description: "Check out the shop for cool items!",
         aliases: ["shop"],
         usage: `${prefix}shop`,
@@ -154,21 +157,69 @@ module.exports = {
       buy: {
         name: "buy",
         emoji: "🛒",
-        description: "Buy ",
+        cooldown: 5,
+        description: "Buy an item from the shop!",
         aliases: ["buy"],
-        usage: `${prefix}buy (item-name)`,
+        usage: `${prefix}buy (item_name) [quantity]`,
         args: [
           {
-            name: "item-name",
+            name: "item_name",
             type: "string",
             required: true,
             description: "The item that you want to buy!",
           },
+          {
+            name: "quantity",
+            type: "integer",
+            required: false,
+            description: "Amount of items to buy!",
+          },
         ],
         examples: [
           {
-            command: `${prefix}shop`,
+            command: `${prefix}buy Auto Response`,
             note: "The item that you want to buy!",
+          },
+        ],
+      },
+      inventory: {
+        name: "inventory",
+        emoji: "📦",
+        cooldown: 5,
+        description: "Check your inventory!",
+        aliases: ["inv", "inven", "inventory"],
+        usage: `${prefix}inventory`,
+        examples: [
+          {
+            command: `${prefix}inv`,
+            note: "Collect your daily balance",
+          },
+        ],
+      },
+      use: {
+        name: "use",
+        emoji: "🛠️",
+        cooldown: 3,
+        description: "Use an item from your inventory!",
+        aliases: ["use"],
+        usage: `${prefix}use (item_name) [quantity]`,
+        args: [
+          {
+            name: "item_name",
+            type: "string",
+            required: true,
+            description: "The item that you want to buy!",
+          },
+          {
+            name: "quantity",
+            type: "integer",
+            required: false,
+            description: "Amount of items to use!",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}use Auto Response 2`,
           },
         ],
       },

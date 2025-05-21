@@ -1,5 +1,6 @@
 require("dotenv").config();
 require("./db");
+const {registerCache} = require("./cache");
 const {Client, GatewayIntentBits, Collection} = require("discord.js");
 const fs = require("node:fs");
 const path = require("node:path");
@@ -8,14 +9,18 @@ const axios = require("axios");
 const express = require("express");
 const app = express();
 
-// Scripts Ctrl + K to toggle
+// Cache Registration
 
-// require("./scripts/shopItems");
+const {getAllShopItems} = require("./utils/shop");
+registerCache("shopItems", getAllShopItems);
 
 // Endpoints
+
 app.get("/ping", (req, res) => {
   res.sendStatus(200);
 });
+
+// Start Express Server
 
 const PORT = process.env.PORT || 10_000;
 app.listen(PORT, () => {
@@ -23,6 +28,7 @@ app.listen(PORT, () => {
 });
 
 // Self Ping
+
 const pingUrl = process.env.URL + "/ping";
 setInterval(async () => {
   try {
@@ -49,6 +55,7 @@ const foldersPath = path.join(__dirname, "commands");
 const commandFolders = fs.readdirSync(foldersPath);
 
 // Command Handler
+
 for (const folder of commandFolders) {
   const commandsPath = path.join(foldersPath, folder);
   const commandFiles = fs
@@ -68,6 +75,7 @@ for (const folder of commandFolders) {
 }
 
 // Event Handler
+
 const eventsPath = path.join(__dirname, "events");
 const eventFiles = fs
   .readdirSync(eventsPath)

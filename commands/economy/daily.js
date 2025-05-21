@@ -49,7 +49,7 @@ const getDaily = async (source, user) => {
     title: "💸 Daily Reward",
     color: config.embed.color.green,
     description: `
-      You claimed ${config.emoji.general.coin} ${DAILY_AMOUNT} coins!
+      You claimed ${config.emoji.general.currency} ${DAILY_AMOUNT} coins!
       \nCome back again tomorrow to claim more coins!
     `,
     footer: {

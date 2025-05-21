@@ -7,9 +7,9 @@ const config = require("../../config");
 const command = commandsData.basic.commands.botInfo;
 
 const thresholds = {
-  cpu: [60, 80],
-  memory: [60, 80],
-  ping: [60, 120],
+  cpu: [80, 95],
+  memory: [75, 90],
+  ping: [60, 200],
 };
 
 const getInfoEmbed = async (client) => {
@@ -67,19 +67,19 @@ const getInfoEmbed = async (client) => {
     },
   ];
 
-  if (critical) {
-    embedColor = config.embed.color.red;
-    fields.push({
-      name: "🔴 Critical",
-      value: critical,
-    });
-  }
-
   if (warning) {
     embedColor = config.embed.color.yellow;
     fields.push({
       name: "🟡 Warning",
       value: warning,
+    });
+  }
+
+  if (critical) {
+    embedColor = config.embed.color.red;
+    fields.push({
+      name: "🔴 Critical",
+      value: critical,
     });
   }
 
