@@ -29,14 +29,14 @@ app.listen(PORT, () => {
 
 // Self Ping
 
-// const pingUrl = process.env.URL + "/ping";
-// setInterval(async () => {
-//   try {
-//     await axios.get(pingUrl);
-//   } catch (error) {
-//     console.log("❌ Self Ping failed: ", error);
-//   }
-// }, 1 * 60 * 1000);
+const pingUrl = process.env.URL + "/ping";
+setInterval(async () => {
+  try {
+    await axios.get(pingUrl);
+  } catch (error) {
+    console.error("❌ Self Ping failed: ", error);
+  }
+}, 3 * 60 * 1000);
 
 // Bot Setup
 
