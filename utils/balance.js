@@ -14,7 +14,23 @@ async function addBalance(userId, amount) {
   });
 }
 
+async function checkBalance(userId, amount) {
+  const balance = await getBalance(userId);
+  if (balance < amount) {
+    return {
+      error: true,
+      balance: balance,
+      difference: amount - balance,
+    };
+  }
+
+  return {
+    error: false,
+  };
+}
+
 module.exports = {
   getBalance,
   addBalance,
+  checkBalance,
 };

@@ -255,6 +255,40 @@ module.exports = {
           },
         ],
       },
+      transfer: {
+        name: "transfer",
+        emoji: "🔄",
+        cooldown: 10,
+        description: "Transfer coins to another user",
+        aliases: ["transfer"],
+        usage: `${prefix}transfer (user) (amount) [reason]`,
+        args: [
+          {
+            name: "user",
+            type: "user",
+            required: true,
+            description: "The user you want to transfer coins to",
+          },
+          {
+            name: "amount",
+            type: "integer",
+            required: false,
+            description: "Amount of coins to transfer",
+          },
+          {
+            name: "reason",
+            type: "string",
+            required: false,
+            description: "Reason for the transfer",
+          },
+        ],
+        examples: [
+          {
+            command: `${prefix}transfer @user 100 for helping me`,
+            note: "Transfer 100 coins to @user for helping me",
+          },
+        ],
+      },
     },
   },
 };

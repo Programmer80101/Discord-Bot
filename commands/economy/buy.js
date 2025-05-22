@@ -34,7 +34,7 @@ const getPurchaseConfirmationButtons = (disabled = false) => {
 const getPurchaseConfirmationEmbed = (item, quantity, totalPrice) => {
   return {
     color: config.embed.color.default,
-    title: `🛍️ Purchase Confirmation`,
+    title: `${command.emoji} Purchase Confirmation`,
     description: `Are you sure you want to buy **${quantity}** of **${item.name}** for ${config.emoji.general.currency} **${totalPrice}**?`,
     fields: [
       {
@@ -64,7 +64,7 @@ const getErrorEmbed = (title, message) => {
   };
 };
 
-const beginPurchase = async (source, userId, itemName, quantity) => {
+const startPurchase = async (source, userId, itemName, quantity) => {
   if (pendingPurchases.has(userId)) {
     return await source.reply({
       embeds: [
@@ -79,20 +79,25 @@ const beginPurchase = async (source, userId, itemName, quantity) => {
   pendingPurchases.add(userId);
 
   if (!itemName) {
+    pendingPurchases.delete(userId);
     return await source.reply({
       embeds: [createCommandGuideEmbed(command.name)],
     });
   }
 
-  const res = await checkBuyItem(userId, itemName, quantity);
-  if (res.error) {
+  const {error, title, message, item} = await checkBuyItem(
+    userId,
+    itemName,
+    quantity
+  );
+
+  if (error) {
     pendingPurchases.delete(userId);
     return await source.reply({
-      embeds: [getErrorEmbed(res.title, res.message)],
+      embeds: [getErrorEmbed(title, message)],
     });
   }
 
-  const item = res.item;
   const totalPrice = item.price * quantity;
   const confirmationEmbed = getPurchaseConfirmationEmbed(
     item,
@@ -141,13 +146,6 @@ const beginPurchase = async (source, userId, itemName, quantity) => {
       components: [row],
     });
 
-    const recheck = await checkBuyItem(userId, itemName, quantity);
-    if (recheck.error) {
-      return await interaction.followUp({
-        embeds: [getErrorEmbed(recheck.title, recheck.message)],
-      });
-    }
-
     if (interaction.customId === "buy_cancel") {
       return await interaction.followUp({
         embeds: [
@@ -156,6 +154,18 @@ const beginPurchase = async (source, userId, itemName, quantity) => {
             "Your purchase has been cancelled."
           ),
         ],
+      });
+    }
+
+    const {error, title, message} = await checkBuyItem(
+      userId,
+      itemName,
+      quantity
+    );
+
+    if (error) {
+      return await interaction.followUp({
+        embeds: [getErrorEmbed(title, message)],
       });
     }
 
@@ -225,7 +235,7 @@ module.exports = {
     const itemName = interaction.options.getString(command.args[0].name);
     const quantity = interaction.options.getInteger(command.args[1].name) || 1;
 
-    await beginPurchase(interaction, interaction.user.id, itemName, quantity);
+    await startPurchase(interaction, interaction.user.id, itemName, quantity);
   },
 
   async prefix(message) {
@@ -244,6 +254,6 @@ module.exports = {
       itemName = args.slice(0, -1).join(" ");
     }
 
-    await beginPurchase(message, message.author.id, itemName, quantity);
+    await startPurchase(message, message.author.id, itemName, quantity);
   },
 };
