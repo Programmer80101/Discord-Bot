@@ -3,3 +3,6 @@
 
 # Node modules
 node_modules
+
+# Scripts (Not used in production)
+scripts
