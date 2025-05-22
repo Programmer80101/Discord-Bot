@@ -10,7 +10,7 @@ const config = require("../../config");
 dayjs.extend(relativeTime);
 
 const command = commandsData.economy.commands.daily;
-const COOLDOWN_HOURS = config.economy.daily.cooldown;
+const COOLDOWN_HOURS = config.economy.daily.cooldownHours;
 const DAILY_AMOUNT = config.economy.daily.amount;
 
 const getDaily = async (source, user) => {

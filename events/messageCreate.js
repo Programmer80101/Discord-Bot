@@ -19,10 +19,10 @@ module.exports = {
     }
 
     if (message.guild.id !== config.server.id) return;
-    if (message.channel.id == config.economy.coinDrop.channel.id) {
+    if (message.channel.id == config.economy.coinDrop.channelId) {
       const now = Date.now();
       const last = lastDropTimestamps.get(message.author.id) || 0;
-      if (now - last > config.economy.coinDrop.cooldown) {
+      if (now - last > config.economy.coinDrop.cooldownSeconds * 1000) {
         if (Math.random() <= config.economy.coinDrop.chance) {
           lastDropTimestamps.set(message.author.id, now);
 
@@ -55,7 +55,7 @@ module.exports = {
       !channelName.includes("ticket")
     ) {
       return await message.reply({
-        content: `You can't use my commands here! \nThey are available to use in <#${config.allowed.channels[0]}>`,
+        content: `You can't use my commands here! They are available to use in <#${config.allowed.channels[0]}>`,
       });
     }
 
@@ -90,7 +90,7 @@ module.exports = {
       if (now < expirationTime) {
         const expiredTimestamp = Math.round(expirationTime / 1_000);
         return message.reply({
-          content: `Please wait, you are on a cooldown for \`${command.data.name}\`. \nYou can use it again <t:${expiredTimestamp}:R>.`,
+          content: `Please wait, you are on a cooldown for \`${command.data.name}\`. You can use it again <t:${expiredTimestamp}:R>.`,
         });
       }
     }

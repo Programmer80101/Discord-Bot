@@ -11,6 +11,7 @@ module.exports = {
       help: {
         name: "help",
         emoji: "❓",
+        cooldown: 3,
         description: "Displays a list of all commands.",
         aliases: ["help", "h"],
         usage: `${prefix}help [category | command]`,
@@ -42,6 +43,7 @@ module.exports = {
       botInfo: {
         name: "botinfo",
         emoji: "ℹ️",
+        cooldown: 10,
         description: "Provides all necessary about the bot.",
         aliases: ["botinfo", "bot", "bi"],
         usage: `${prefix}botinfo`,
@@ -56,6 +58,7 @@ module.exports = {
       user: {
         name: "user",
         emoji: "👤",
+        cooldown: 5,
         description: "Displays information about a user.",
         aliases: ["user", "u"],
         usage: `${prefix}user [user]`,
@@ -81,6 +84,7 @@ module.exports = {
       ping: {
         name: "ping",
         emoji: "🏓",
+        cooldown: 3,
         description: "Checks the latency of the bot.",
         aliases: ["ping", "p", "latency", "l"],
         usage: `${prefix}ping`,
@@ -89,6 +93,34 @@ module.exports = {
           {
             command: `${prefix}ping`,
             note: "Displays the latency of the bot.",
+          },
+        ],
+      },
+      guide: {
+        name: "guide",
+        emoji: "📖",
+        description: "Guide for using the bot.",
+        aliases: ["guide"],
+        usage: `${prefix}guide`,
+        args: [],
+        examples: [
+          {
+            command: `${prefix}guide`,
+            note: "Guide for using the bot.",
+          },
+        ],
+      },
+      rules: {
+        name: "rules",
+        emoji: "📜",
+        description: "Rules for using the bot.",
+        aliases: ["rules", "rules"],
+        usage: `${prefix}rules`,
+        args: [],
+        examples: [
+          {
+            command: `${prefix}rules`,
+            note: "Rules for using the bot.",
           },
         ],
       },
@@ -103,7 +135,7 @@ module.exports = {
       balance: {
         name: "balance",
         emoji: "🪙",
-        cooldown: 3,
+        cooldown: 5,
         description: "Get your current balance.",
         aliases: ["balance", "bal"],
         usage: `${prefix}balance [user]`,
@@ -143,7 +175,7 @@ module.exports = {
       shop: {
         name: "shop",
         emoji: "🛍️",
-        cooldown: 5,
+        cooldown: 10,
         description: "Check out the shop for cool items!",
         aliases: ["shop"],
         usage: `${prefix}shop`,
@@ -199,7 +231,7 @@ module.exports = {
       use: {
         name: "use",
         emoji: "🛠️",
-        cooldown: 3,
+        cooldown: 5,
         description: "Use an item from your inventory!",
         aliases: ["use"],
         usage: `${prefix}use (item_name) [quantity]`,

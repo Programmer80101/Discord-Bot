@@ -9,7 +9,7 @@ const command = commandsData.basic.commands.botInfo;
 const thresholds = {
   cpu: [80, 95],
   memory: [75, 90],
-  ping: [60, 200],
+  ping: [120, 300],
 };
 
 const getInfoEmbed = async (client) => {

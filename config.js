@@ -4,7 +4,7 @@ const prefix = "!";
 const isDev = process.env.NODE_ENV == "dev";
 
 module.exports = {
-  name: !isDev ? "Dev Bot" : "Test Bot",
+  name: isDev ? "Juice WRLD Dev Bot" : "Juice WRLD Coin Bot",
   isDev: isDev,
   isProd: !isDev,
   prefix: prefix,
@@ -17,14 +17,13 @@ module.exports = {
   economy: {
     daily: {
       amount: 10,
-      cooldown: 23,
+      cooldownHours: 23,
     },
     coinDrop: {
-      channel: {
-        id: isDev ? "1372890783895519285" : "1320040091892056115",
-      },
       chance: 0.05,
-      cooldown: 30 * 1000,
+      cooldownSeconds: 60,
+      range: [0, 10],
+      channelId: isDev ? "1372890783895519285" : "1320040091892056115",
     },
   },
   owner: {
