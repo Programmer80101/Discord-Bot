@@ -4,7 +4,7 @@ const prefix = "!";
 const isDev = process.env.NODE_ENV == "dev";
 
 module.exports = {
-  name: isDev ? "Juice WRLD Dev Bot" : "Juice WRLD Coin Bot",
+  name: isDev ? "Dev Discord Bot" : "Discord Bot",
   isDev: isDev,
   isProd: !isDev,
   prefix: prefix,
@@ -64,26 +64,9 @@ module.exports = {
   emoji: {
     general: {
       duration: "⏱️",
-      partyPopper: "🎉",
-      confetti: "🎊",
-      ribbon: "🎀",
-      present: "🎁",
-      link: "🔗",
-      pin: "📌",
-      roundPin: "📍",
-      hourglass: "⌛",
-      hourglass2: "⏳",
       cabinet: "🗄️",
       alert: "🚨",
       warning: "⚠️",
-      fire: "🔥",
-      thunder: "⚡",
-      drop: "💧",
-      snowflake: "❄️",
-      profit: "📈",
-      loss: "📉",
-      label: "🏷️",
-      bookmark: "🔖",
       coin: "🪙",
       currency: "<:WrldCoin:1373929792755339366>",
       in: "📥",
