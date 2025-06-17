@@ -1,20 +1,19 @@
-import {
+const {
   SlashCommandBuilder,
   ActionRowBuilder,
   ButtonBuilder,
   ButtonStyle,
   ChatInputCommandInteraction,
   Message,
-} from "discord.js";
+} = require("discord.js");
+const commandsData = require("../../commands");
+const {checkBuyItem, buyItem} = require("../../utils/shop");
+const {modifyInventoryItem} = require("../../utils/inventory");
+const {autoCompleteShopItems} = require("../../utils/autocomplete");
+const {createCommandGuideEmbed} = require("../../utils");
+const config = require("../../config");
 
-import { checkBuyItem, buyItem } from "../../utils/shop.js";
-import { modifyInventoryItem } from "../../utils/inventory.js";
-import { autoCompleteShopItems } from "../../utils/autocomplete.js";
-import { createCommandGuideEmbed } from "../../utils.js";
-import commandConfig from "../../commands.js";
-import config from "../../config.js";
-
-const command = commandConfig.economy.commands.buy;
+const command = commandsData.economy.commands.buy;
 const pendingPurchases = new Set();
 
 const getPurchaseConfirmationButtons = (disabled = false) => {
@@ -86,7 +85,7 @@ const startPurchase = async (source, userId, itemName, quantity) => {
     });
   }
 
-  const { error, title, message, item } = await checkBuyItem(
+  const {error, title, message, item} = await checkBuyItem(
     userId,
     itemName,
     quantity
@@ -158,7 +157,7 @@ const startPurchase = async (source, userId, itemName, quantity) => {
       });
     }
 
-    const { error, title, message } = await checkBuyItem(
+    const {error, title, message} = await checkBuyItem(
       userId,
       itemName,
       quantity
@@ -209,7 +208,7 @@ const startPurchase = async (source, userId, itemName, quantity) => {
   });
 };
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

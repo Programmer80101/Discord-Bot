@@ -1,11 +1,10 @@
-import { SlashCommandBuilder } from "discord.js";
+const {SlashCommandBuilder} = require("discord.js");
+const commandsData = require("../../commands");
 
-import commandConfig from "../../commands.js";
-
-const command = commandConfig.basic.commands.ping;
+const command = commandsData.basic.commands.ping;
 const getLatency = (client) => `🏓 Pong! ${client.ws.ping}ms.`;
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

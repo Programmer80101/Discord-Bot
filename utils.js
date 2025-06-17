@@ -1,5 +1,5 @@
-import commandConfig from "./commands.js";
-import config from "./config.js";
+const commandsData = require("./commands.js");
+const config = require("./config.js");
 
 function toCamelCase(str) {
   return str
@@ -9,7 +9,11 @@ function toCamelCase(str) {
 }
 
 function getItemId(name) {
-  return toCamelCase(name);
+  return name
+    .trim()
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "_")
+    .replace(/^-+|-+$/g, "");
 }
 
 const getRandomValue = (obj) => {
@@ -20,10 +24,9 @@ const getRandomValue = (obj) => {
 
 const getRandomTip = (category, exception = "") => {
   const id = toCamelCase(category);
-  const commands = commandConfig[id].commands;
-  const keys = Object.keys(commands).filter((key) => key !== exception);
+  const keys = Object.keys(config.tips[id]).filter((key) => key !== exception);
   const randomKey = keys[Math.floor(Math.random() * keys.length)];
-  return getRandomValue(commands[randomKey].tips);
+  return getRandomValue(config.tips[id][randomKey]);
 };
 
 const parseTime = (string) => {
@@ -63,7 +66,7 @@ const parseTime = (string) => {
 const createCommandGuideEmbed = (name) => {
   const query = name.toLowerCase();
 
-  for (const category of Object.values(commandConfig)) {
+  for (const category of Object.values(commandsData)) {
     for (const cmd of Object.values(category.commands)) {
       if (
         cmd.name.toLowerCase() === query ||
@@ -133,7 +136,7 @@ const createCommandGuideEmbed = (name) => {
     }
   }
 
-  for (const category of Object.values(commandConfig)) {
+  for (const category of Object.values(commandsData)) {
     if (category.name.toLowerCase() === query) {
       const commandsList = Object.values(category.commands).map((cmd) => ({
         name: config.prefix + cmd.name,
@@ -157,12 +160,12 @@ const createCommandGuideEmbed = (name) => {
     description: `No command or category found matching \`${name}\`.`,
     color: config.embed.color.red,
     footer: {
-      text: commandConfig.basic.commands.help.default,
+      text: config.tips.basic.help.default,
     },
   };
 };
 
-export {
+module.exports = {
   createCommandGuideEmbed,
   parseTime,
   getItemId,

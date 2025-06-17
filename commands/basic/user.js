@@ -1,17 +1,15 @@
-import { SlashCommandBuilder } from "discord.js";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime.js";
-import duration from "dayjs/plugin/duration.js";
-
-import { getRandomTip } from "../../utils.js";
-import commandConfig from "../../commands.js";
-import config from "../../config.js";
+const dayjs = require("dayjs");
+const relativeTime = require("dayjs/plugin/relativeTime");
+const duration = require("dayjs/plugin/duration");
+const {SlashCommandBuilder} = require("discord.js");
+const commandsData = require("../../commands");
+const {getRandomTip} = require("../../utils");
+const config = require("../../config");
 
 dayjs.extend(relativeTime);
 dayjs.extend(duration);
 
-const command = commandConfig.basic.commands.user;
+const command = commandsData.basic.commands.user;
 
 const getUserEmbed = async (user, member) => {
   const createdAt = `<t:${Math.floor(user.createdTimestamp / 1000)}:D>`;
@@ -75,13 +73,13 @@ const getUserEmbed = async (user, member) => {
         value: roles,
       },
     ],
-    footer: { text: getRandomTip(commandConfig.basic.name, command.name) },
+    footer: {text: getRandomTip(commandsData.basic.name, command.name)},
   };
 
   return embed;
 };
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)
@@ -99,7 +97,7 @@ export default {
 
     const userEmbed = await getUserEmbed(user, member);
 
-    await interaction.reply({ embeds: [userEmbed] });
+    await interaction.reply({embeds: [userEmbed]});
   },
 
   async prefix(message, args) {
@@ -108,6 +106,6 @@ export default {
 
     const userEmbed = await getUserEmbed(user, member);
 
-    await message.reply({ embeds: [userEmbed] });
+    await message.reply({embeds: [userEmbed]});
   },
 };

@@ -1,10 +1,9 @@
-import { SlashCommandBuilder } from "discord.js";
+const {SlashCommandBuilder} = require("discord.js");
+const commandsData = require("../../commands");
+const {getRandomTip} = require("../../utils");
+const config = require("../../config.js");
 
-import { getRandomTip } from "../../utils.js";
-import commandConfig from "../../commands.js";
-import config from "../../config.js";
-
-const command = commandConfig.basic.commands.rules;
+const command = commandsData.basic.commands.rules;
 
 const sendRules = async (source) => {
   let description = `Follow these rules all the time while using the bot! \n\n`;
@@ -22,7 +21,7 @@ const sendRules = async (source) => {
     title: `${command.emoji} Bot Rules`,
     description: description,
     footer: {
-      text: getRandomTip(commandConfig.basic.name, command.name),
+      text: getRandomTip(commandsData.basic.name, command.name),
     },
   };
 
@@ -31,7 +30,7 @@ const sendRules = async (source) => {
   });
 };
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

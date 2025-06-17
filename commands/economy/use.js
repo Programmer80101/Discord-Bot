@@ -1,12 +1,11 @@
-import { SlashCommandBuilder } from "discord.js";
+const {SlashCommandBuilder} = require("discord.js");
+const commandsData = require("../../commands");
+const {checkUseItem, useItem} = require("../../utils/item");
+const {autoCompleteShopItems} = require("../../utils/autocomplete");
+const {createCommandGuideEmbed, getItemId} = require("../../utils");
+const config = require("../../config");
 
-import { createCommandGuideEmbed, getItemId } from "../../utils.js";
-import { autoCompleteShopItems } from "../../utils/autocomplete.js";
-import { checkUseItem, useItem } from "../../utils/item.js";
-import commandConfig from "../../commands.js";
-import config from "../../config.js";
-
-const command = commandConfig.economy.commands.use;
+const command = commandsData.economy.commands.use;
 
 const createErrorEmbed = (title, message) => {
   return {
@@ -25,7 +24,6 @@ const useItemFromInv = async (source, userId, itemId) => {
   }
 
   if (res.item.autoClaim) {
-    await useItem(userId, itemId);
     return await source.reply({
       content: `✅ You used **${res.item.emoji} ${res.item.name}** and it took effect immediately!`,
     });
@@ -55,7 +53,7 @@ const useItemFromInv = async (source, userId, itemId) => {
   });
 };
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

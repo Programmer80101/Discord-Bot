@@ -1,17 +1,15 @@
-import { SlashCommandBuilder } from "discord.js";
-
-import dayjs from "dayjs";
-import relativeTime from "dayjs/plugin/relativeTime.js";
-
-import { getLastDaily, setLastDaily } from "../../utils/daily.js";
-import { addBalance } from "../../utils/balance.js";
-import { getRandomTip } from "../../utils.js";
-import commandConfig from "../../commands.js";
-import config from "../../config.js";
+const dayjs = require("dayjs");
+const relativeTime = require("dayjs/plugin/relativeTime");
+const {SlashCommandBuilder} = require("discord.js");
+const {getLastDaily, setLastDaily} = require("../../utils/daily");
+const {addBalance} = require("../../utils/balance");
+const commandsData = require("../../commands");
+const {getRandomTip} = require("../../utils");
+const config = require("../../config");
 
 dayjs.extend(relativeTime);
 
-const command = commandConfig.economy.commands.daily;
+const command = commandsData.economy.commands.daily;
 const COOLDOWN_HOURS = config.economy.daily.cooldownHours;
 const DAILY_AMOUNT = config.economy.daily.amount;
 
@@ -34,7 +32,7 @@ const getDaily = async (source, user) => {
           You have already claimed your daily reward! Come back in ${inTime}.
         `,
         footer: {
-          text: getRandomTip(commandConfig.economy.name, command.name),
+          text: getRandomTip(commandsData.economy.name, command.name),
         },
       };
 
@@ -55,14 +53,14 @@ const getDaily = async (source, user) => {
       \nCome back again tomorrow to claim more coins!
     `,
     footer: {
-      text: getRandomTip(commandConfig.economy.name, command.name),
+      text: getRandomTip(commandsData.economy.name, command.name),
     },
   };
 
-  await source.reply({ embeds: [dailyEmbed] });
+  await source.reply({embeds: [dailyEmbed]});
 };
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

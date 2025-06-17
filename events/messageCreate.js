@@ -1,25 +1,25 @@
-import { Events, Collection } from "discord.js";
-
-import { getRandomTip } from "../utils.js";
-import { addBalance } from "../utils/balance.js";
-import commandConfig from "../commands.js";
-import config from "../config.js";
-
+require("dotenv").config();
+const {Events, Collection} = require("discord.js");
+const commandsData = require("../commands");
+const {getRandomTip} = require("../utils");
+const {addBalance} = require("../utils/balance");
+const config = require("../config");
 const prefix = config.prefix;
+
 const lastDropTimestamps = new Map();
 
-export default {
+module.exports = {
   name: Events.MessageCreate,
   async execute(message) {
     if (message.author.bot) return;
-    if (!message.guildId) {
+    if (!message.guild) {
       return await message.reply({
         content: `You can only use my commands in <#${config.allowed.channels[0]}>!`,
       });
     }
 
-    if (message.guildId != config.server.id) return;
-    if (message.channelId == config.economy.coinDrop.channelId) {
+    if (message.guild.id !== config.server.id) return;
+    if (message.channel.id == config.economy.coinDrop.channelId) {
       const now = Date.now();
       const last = lastDropTimestamps.get(message.author.id) || 0;
       if (now - last > config.economy.coinDrop.cooldownSeconds * 1000) {
@@ -34,11 +34,11 @@ export default {
             title: "💰 Coin Drop!",
             description: `You won ${config.emoji.general.currency} **${winAmount}** coins for chatting!`,
             footer: {
-              text: getRandomTip(commandConfig.economy.name),
+              text: getRandomTip(commandsData.economy.name),
             },
           };
 
-          await message.reply({ embeds: [winEmbed] });
+          await message.reply({embeds: [winEmbed]});
         }
       }
     }
@@ -72,7 +72,7 @@ export default {
       );
     }
 
-    const { cooldowns } = message.client;
+    const {cooldowns} = message.client;
 
     if (!cooldowns.has(command.name)) {
       cooldowns.set(command.name, new Collection());

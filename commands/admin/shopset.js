@@ -1,17 +1,16 @@
-import {
+const {
   SlashCommandBuilder,
   PermissionFlagsBits,
   MessageFlags,
-} from "discord.js";
-
-import commandsData from "../../adminCommands.js";
-import { autoCompleteShopItems } from "../../utils/autocomplete.js";
-import { getShopItemByName, upsertShopItem } from "../../utils/shop.js";
-import { getItemId } from "../../utils.js";
+} = require("discord.js");
+const commandsData = require("../../adminCommands");
+const {getShopItemByName, upsertShopItem} = require("../../utils/shop");
+const {getItemId} = require("../../utils");
+const {autoCompleteShopItems} = require("../../utils/autocomplete");
 
 const command = commandsData.economy.commands.shopset;
 
-export default {
+module.exports = {
   ...command,
   data: new SlashCommandBuilder()
     .setName(command.name)

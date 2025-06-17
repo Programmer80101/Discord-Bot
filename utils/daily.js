@@ -1,5 +1,5 @@
-import { Timestamp } from "firebase-admin/firestore";
-import { users } from "../db.js";
+const {Timestamp} = require("firebase-admin/firestore");
+const {users} = require("../db");
 
 async function getLastDaily(userId) {
   const snap = await users.doc(userId).get();
@@ -10,7 +10,10 @@ async function getLastDaily(userId) {
 
 async function setLastDaily(userId, timestampMs) {
   const timestamp = Timestamp.fromMillis(timestampMs);
-  await users.doc(userId).set({ lastDaily: timestamp }, { merge: true });
+  await users.doc(userId).set({lastDaily: timestamp}, {merge: true});
 }
 
-export { getLastDaily, setLastDaily };
+module.exports = {
+  getLastDaily,
+  setLastDaily,
+};
